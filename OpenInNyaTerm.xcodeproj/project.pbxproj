@@ -310,7 +310,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B00100100000001 /* Build configuration list for PBXProject "OpenInNyaTerm" */ = {
+		B001001000000001 /* Build configuration list for PBXProject "OpenInNyaTerm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B001001100000001 /* Debug */,
