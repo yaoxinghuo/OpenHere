@@ -47,21 +47,25 @@ class FinderSync: FIFinderSync {
         guard let config = sender.representedObject as? MenuItemConfig else { return }
 
         let path = currentPath()
-        let resolved = MenuConfigStore.resolveTemplate(config.template, path: path)
 
         switch config.actionType {
         case .urlScheme:
+            let resolved = MenuConfigStore.resolveTemplate(config.template, path: path)
             if let url = URL(string: resolved) {
                 NSWorkspace.shared.open(url)
             }
         case .shellCommand:
+            // Single-quote the path to handle spaces and special characters in shell commands
+            let quotedPath = "'\(path.replacingOccurrences(of: "'", with: "'\\''"))'"
+            let resolved = MenuConfigStore.resolveTemplate(config.template, path: quotedPath)
             executeShellCommand(resolved)
         }
     }
 
     // MARK: - Path Resolution
 
-    /// Get the current Finder directory: selection (file → parent) > target > home.
+    /// Resolve the template by replacing {path} with the given directory path.
+    /// The path is single-quoted to handle spaces and special characters.
     private func currentPath() -> String {
         let controller = FIFinderSyncController.default()
 
@@ -83,8 +87,8 @@ class FinderSync: FIFinderSync {
 
     // MARK: - Shell Command Execution
 
-    /// Execute a shell command. The command is split into arguments by whitespace,
-    /// with {path} already replaced. Uses Process for direct execution.
+    /// Execute a shell command. {path} is replaced with the current directory,
+    /// quoted with single quotes to handle spaces and special characters.
     private func executeShellCommand(_ command: String) {
         let task = Process()
         task.launchPath = "/bin/sh"
