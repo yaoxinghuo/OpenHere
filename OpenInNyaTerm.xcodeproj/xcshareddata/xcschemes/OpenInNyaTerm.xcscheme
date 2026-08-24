@@ -20,6 +20,20 @@
                ReferencedContainer = "container:OpenInNyaTerm.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B002000900000001"
+               BuildableName = "FinderSyncExtension.appex"
+               BlueprintName = "FinderSyncExtension"
+               ReferencedContainer = "container:OpenInNyaTerm.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

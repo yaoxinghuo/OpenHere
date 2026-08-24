@@ -27,9 +27,40 @@ jobs:
                      -configuration Release \
                      -derivedDataPath build \
                      CODE_SIGN_IDENTITY="-" \
-                     CODE_SIGNING_REQUIRED=YES \
-                     CODE_SIGNING_ALLOWED=YES \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGNING_ALLOWED=NO \
+                     DEVELOPMENT_TEAM="" \
                      build
+
+      - name: Verify extension in app bundle
+        run: |
+          APP_PATH="build/Build/Products/Release/OpenInNyaTerm.app"
+          echo "=== App bundle contents ==="
+          find "$APP_PATH" -name "*.appex" -type d
+          echo "=== PlugIns directory ==="
+          ls -la "$APP_PATH/Contents/PlugIns/" 2>/dev/null || echo "No PlugIns directory found!"
+          EXT_PATH="$APP_PATH/Contents/PlugIns/FinderSyncExtension.appex"
+          if [ -d "$EXT_PATH" ]; then
+            echo "=== Extension found ==="
+            ls -la "$EXT_PATH/Contents/"
+            echo "=== Extension Info.plist ==="
+            plutil -p "$EXT_PATH/Contents/Info.plist"
+          else
+            echo "ERROR: FinderSyncExtension.appex not found in app bundle!"
+            exit 1
+          fi
+
+      - name: Ad-hoc sign extension and app
+        run: |
+          APP_PATH="build/Build/Products/Release/OpenInNyaTerm.app"
+          EXT_PATH="$APP_PATH/Contents/PlugIns/FinderSyncExtension.appex"
+          echo "Signing extension..."
+          codesign --force --deep --sign - "$EXT_PATH"
+          echo "Signing app..."
+          codesign --force --deep --sign - "$APP_PATH"
+          echo "Verifying signatures..."
+          codesign --verify --verbose "$EXT_PATH" 2>&1
+          codesign --verify --verbose "$APP_PATH" 2>&1
 
       - name: Zip the app
         run: |
