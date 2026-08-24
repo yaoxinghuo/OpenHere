@@ -14,13 +14,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import math
-import os
 import subprocess
 import tempfile
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 ICONSET = ROOT / "OpenInNyaTerm" / "Assets.xcassets" / "AppIcon.appiconset"
@@ -72,74 +70,21 @@ print("extracted \\(png.count) bytes")
     subprocess.check_call([str(bin_path)])
 
 
-def process_sphere(src: Image.Image) -> Image.Image:
-    """Keep only the NyaTerm icon; transparent elsewhere."""
+def process_icon(src: Image.Image) -> Image.Image:
+    """Crop to the icon's visible bounds (via alpha), center on a square canvas."""
     src = src.convert("RGBA")
     w, h = src.size
-    px = src.load()
 
-    # Sphere body: medium-dark gray (not cream glyphs, not white plate)
-    body = Image.new("L", (w, h), 0)
-    bp = body.load()
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = px[x, y]
-            if a < 8:
-                continue
-            lum = (r + g + b) / 3.0
-            sat = max(r, g, b) - min(r, g, b)
-            if 30 <= lum <= 150 and sat < 35:
-                bp[x, y] = 255
-
-    xs = ys = n = 0
-    for y in range(h):
-        for x in range(w):
-            if bp[x, y] > 128:
-                xs += x
-                ys += y
-                n += 1
-    if n == 0:
-        raise RuntimeError("could not find NyaTerm icon body in source icon")
-    cx, cy = xs / n, ys / n
-    dists = [
-        math.hypot(x - cx, y - cy)
-        for y in range(h)
-        for x in range(w)
-        if bp[x, y] > 128
-    ]
-    dists.sort()
-    radius = dists[int(len(dists) * 0.995)]
-
-    circle = Image.new("L", (w, h), 0)
-    ImageDraw.Draw(circle).ellipse(
-        [cx - radius, cy - radius, cx + radius, cy + radius], fill=255
-    )
-    circle = circle.filter(ImageFilter.GaussianBlur(0.8))
-
-    out = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    opx = out.load()
-    cpx = circle.load()
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = px[x, y]
-            m = cpx[x, y]
-            if m < 2 or a < 2:
-                continue
-            if (r + g + b) / 3 < 12:
-                continue
-            na = int(round(a * m / 255.0))
-            if na < 2:
-                continue
-            opx[x, y] = (r, g, b, na)
-
-    bbox = out.getbbox()
+    bbox = src.getbbox()
     if not bbox:
-        raise RuntimeError("empty result after sphere clip")
-    pad = int(radius * 0.06)
+        raise RuntimeError("could not find visible icon content")
+
     l, t, r, b = bbox
+    pad = int(max(r - l, b - t) * 0.06)
     l, t = max(0, l - pad), max(0, t - pad)
     r, b = min(w, r + pad), min(h, b + pad)
-    cropped = out.crop((l, t, r, b))
+    cropped = src.crop((l, t, r, b))
+
     cw, ch = cropped.size
     side = max(cw, ch)
     canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
@@ -177,7 +122,7 @@ def main() -> None:
         print(f"extracting icon from {args.nyaterm} …")
         extract_via_swift(args.nyaterm, raw)
         print("clipping to NyaTerm icon (transparent background) …")
-        master = process_sphere(Image.open(raw))
+        master = process_icon(Image.open(raw))
         a_min, a_max = master.getchannel("A").getextrema()
         if a_min != 0 or a_max != 255:
             print(f"warning: unexpected alpha extrema {(a_min, a_max)}")

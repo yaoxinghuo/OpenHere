@@ -12,7 +12,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B001000500000001 /* OpenInNyaTerm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeSourceIndex = 0; path = OpenInNyaTerm.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B001000500000001 /* OpenInNyaTerm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenInNyaTerm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B001000200000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		B001000400000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B001000600000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
