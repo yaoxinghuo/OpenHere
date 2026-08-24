@@ -27,9 +27,8 @@ jobs:
                      -configuration Release \
                      -derivedDataPath build \
                      CODE_SIGN_IDENTITY="-" \
-                     CODE_SIGNING_REQUIRED=NO \
-                     CODE_SIGNING_ALLOWED=NO \
-                     DEVELOPMENT_TEAM="" \
+                     CODE_SIGNING_REQUIRED=YES \
+                     CODE_SIGNING_ALLOWED=YES \
                      build
 
       - name: Verify extension in app bundle
@@ -45,22 +44,28 @@ jobs:
             ls -la "$EXT_PATH/Contents/"
             echo "=== Extension Info.plist ==="
             plutil -p "$EXT_PATH/Contents/Info.plist"
+            echo "=== Extension codesign info ==="
+            codesign -dvvv "$EXT_PATH" 2>&1
+            echo "=== Extension entitlements ==="
+            codesign -d --entitlements - "$EXT_PATH" 2>&1
           else
             echo "ERROR: FinderSyncExtension.appex not found in app bundle!"
             exit 1
           fi
 
-      - name: Ad-hoc sign extension and app
+      - name: Re-sign with correct entitlements
         run: |
           APP_PATH="build/Build/Products/Release/OpenInNyaTerm.app"
           EXT_PATH="$APP_PATH/Contents/PlugIns/FinderSyncExtension.appex"
-          echo "Signing extension..."
-          codesign --force --deep --sign - "$EXT_PATH"
-          echo "Signing app..."
-          codesign --force --deep --sign - "$APP_PATH"
+          echo "Re-signing extension with sandbox entitlements..."
+          codesign --force --sign - --entitlements FinderSyncExtension/FinderSyncExtension.entitlements "$EXT_PATH"
+          echo "Re-signing app..."
+          codesign --force --sign - --entitlements OpenInNyaTerm/OpenInNyaTerm.entitlements "$APP_PATH"
           echo "Verifying signatures..."
           codesign --verify --verbose "$EXT_PATH" 2>&1
           codesign --verify --verbose "$APP_PATH" 2>&1
+          echo "=== Final entitlements check ==="
+          codesign -d --entitlements - "$EXT_PATH" 2>&1
 
       - name: Archive the app
         run: |
