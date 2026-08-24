@@ -130,15 +130,15 @@ func notifyError(_ message: String) {
 
 // MARK: - Main
 
-// When launched directly (no arguments), keep the app alive briefly so macOS
-// can discover and register the embedded FinderSyncExtension. The extension
-// won't appear in System Settings → Extensions if the host app exits too fast.
+// When launched directly (no arguments), run a proper NSApplication event loop
+// for a few seconds so macOS can discover and register the embedded FinderSyncExtension.
+// Using exit() bypasses Launch Services registration; NSApplication.terminate() is required.
 if CommandLine.arguments.count == 1 {
-    // Run a short RunLoop to let the system register the extension
-    let deadline = Date().addingTimeInterval(3)
-    while Date() < deadline {
-        RunLoop.current.run(until: Date().addingTimeInterval(0.1))
-    }
+    let app = NSApplication.shared
+    let delegate = RegistrationDelegate()
+    app.delegate = delegate
+    app.setActivationPolicy(.accessory)
+    app.run()
     exit(0)
 }
 
@@ -156,3 +156,36 @@ if openPathInNyaTerm(path: path) {
 let detail = "无法在 NyaTerm 中打开：\n\(path)\n\n请确认 NyaTerm 已正确安装并注册了 nyaterm:// URL Scheme。"
 notifyError(detail)
 exit(1)
+
+// MARK: - Registration Delegate
+
+/// Keeps the app alive briefly on direct launch so macOS registers the FinderSyncExtension,
+/// then terminates cleanly via NSApplication.terminate().
+private final class RegistrationDelegate: NSObject, NSApplicationDelegate {
+    private var timer: Timer?
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Register the extension with the system explicitly
+        let extURL = Bundle.main.bundleURL
+            .appendingPathComponent("Contents")
+            .appendingPathComponent("PlugIns")
+            .appendingPathComponent("FinderSyncExtension.appex")
+
+        // Use pluginkit to register the extension if it exists
+        if FileManager.default.fileExists(atPath: extURL.path) {
+            let task = Process()
+            task.launchPath = "/usr/bin/pluginkit"
+            task.arguments = ["-a", extURL.path]
+            try? task.run()
+            task.waitUntilExit()
+        }
+
+        // Also touch the app bundle to trigger Launch Services re-scan
+        _ = Bundle.main
+
+        // Quit after 5 seconds
+        timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+            NSApplication.shared.terminate(nil)
+        }
+    }
+}
