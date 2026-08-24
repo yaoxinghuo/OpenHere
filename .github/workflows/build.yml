@@ -18,12 +18,12 @@ jobs:
 
       - name: List available schemes
         run: |
-          xcodebuild -project OpenInNyaTerm.xcodeproj -list
+          xcodebuild -project OpenHere.xcodeproj -list
 
       - name: Build Release
         run: |
-          xcodebuild -project OpenInNyaTerm.xcodeproj \
-                     -scheme OpenInNyaTerm \
+          xcodebuild -project OpenHere.xcodeproj \
+                     -scheme OpenHere \
                      -configuration Release \
                      -derivedDataPath build \
                      CODE_SIGN_IDENTITY="-" \
@@ -33,7 +33,7 @@ jobs:
 
       - name: Verify extension in app bundle
         run: |
-          APP_PATH="build/Build/Products/Release/OpenInNyaTerm.app"
+          APP_PATH="build/Build/Products/Release/OpenHere.app"
           echo "=== App bundle contents ==="
           find "$APP_PATH" -name "*.appex" -type d
           echo "=== PlugIns directory ==="
@@ -55,12 +55,12 @@ jobs:
 
       - name: Re-sign with correct entitlements
         run: |
-          APP_PATH="build/Build/Products/Release/OpenInNyaTerm.app"
+          APP_PATH="build/Build/Products/Release/OpenHere.app"
           EXT_PATH="$APP_PATH/Contents/PlugIns/FinderSyncExtension.appex"
           echo "Re-signing extension with sandbox entitlements..."
           codesign --force --sign - --entitlements FinderSyncExtension/FinderSyncExtension.entitlements "$EXT_PATH"
           echo "Re-signing app..."
-          codesign --force --sign - --entitlements OpenInNyaTerm/OpenInNyaTerm.entitlements "$APP_PATH"
+          codesign --force --sign - --entitlements OpenHere/OpenHere.entitlements "$APP_PATH"
           echo "Verifying signatures..."
           codesign --verify --verbose "$EXT_PATH" 2>&1
           codesign --verify --verbose "$APP_PATH" 2>&1
@@ -70,21 +70,21 @@ jobs:
       - name: Archive the app
         run: |
           cd build/Build/Products/Release
-          tar czf OpenInNyaTerm.app.tar.gz OpenInNyaTerm.app
+          tar czf OpenHere.app.tar.gz OpenHere.app
           echo "=== tar.gz contents ==="
-          tar tzf OpenInNyaTerm.app.tar.gz | head -20
+          tar tzf OpenHere.app.tar.gz | head -20
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: OpenInNyaTerm-app
-          path: build/Build/Products/Release/OpenInNyaTerm.app.tar.gz
+          name: OpenHere-app
+          path: build/Build/Products/Release/OpenHere.app.tar.gz
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: build/Build/Products/Release/OpenInNyaTerm.app.tar.gz
+          files: build/Build/Products/Release/OpenHere.app.tar.gz
           draft: false
           prerelease: false
         env:

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B001000B00000001"
-               BuildableName = "OpenInNyaTerm.app"
-               BlueprintName = "OpenInNyaTerm"
-               ReferencedContainer = "container:OpenInNyaTerm.xcodeproj">
+               BuildableName = "OpenHere.app"
+               BlueprintName = "OpenHere"
+               ReferencedContainer = "container:OpenHere.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,7 +31,7 @@
                BlueprintIdentifier = "B002000900000001"
                BuildableName = "FinderSyncExtension.appex"
                BlueprintName = "FinderSyncExtension"
-               ReferencedContainer = "container:OpenInNyaTerm.xcodeproj">
+               ReferencedContainer = "container:OpenHere.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

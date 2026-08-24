@@ -1,5 +1,5 @@
 // main.swift
-// OpenInNyaTerm — Configurable Finder toolbar app
+// OpenHere — Configurable Finder toolbar app
 
 import Cocoa
 import SwiftUI
@@ -60,7 +60,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
         // Enable the extension (ad-hoc signed extensions need explicit enable)
         let enableTask = Process()
         enableTask.launchPath = "/usr/bin/pluginkit"
-        enableTask.arguments = ["-e", "use", "-i", "com.local.OpenInNyaTerm.FinderSync"]
+        enableTask.arguments = ["-e", "use", "-i", "com.local.OpenHere.FinderSync"]
         try? enableTask.run()
         enableTask.waitUntilExit()
     }

@@ -11,11 +11,11 @@ class FinderSync: FIFinderSync {
     // MARK: - Toolbar Item
 
     override var toolbarItemName: String {
-        return "OpenInNyaTerm"
+        return "OpenHere"
     }
 
     override var toolbarItemToolTip: String {
-        return "Open current directory in NyaTerm"
+        return "Open current directory with configured apps"
     }
 
     override var toolbarItemImage: NSImage {

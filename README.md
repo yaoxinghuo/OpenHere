@@ -1,8 +1,8 @@
-# OpenInNyaTerm
+# OpenHere
 
 [English](./README.md) | [中文](./README-zh.md)
 
-A minimal macOS Finder toolbar app that opens the current directory in [NyaTerm](https://github.com/nyakang/nyaterm) with a single click.
+A minimal macOS Finder toolbar app that lets you open the current directory in any terminal or app — fully customizable.
 
 > Inspired by [OpenInOtty](https://github.com/pintaste/OpenInOtty) and [OpenInTerminal-Lite](https://github.com/Ji4n1ng/OpenInTerminal).
 
@@ -12,15 +12,17 @@ A minimal macOS Finder toolbar app that opens the current directory in [NyaTerm]
 
 ## Features
 
-- **One click** — toolbar icon opens NyaTerm at the current Finder path
-- **Smart path**
+- **Configurable menu** — add unlimited menu items, each with a display name, action type, and command template
+- **Two action types**
+  - **URL Scheme** — open a URL (e.g. `nyaterm://connect/local?cwd={path}`)
+  - **Shell Command** — execute a shell command (e.g. `open -a Terminal {path}`)
+- **`{path}` placeholder** — automatically replaced with the current Finder directory
+- **Smart path detection**
   - Selection → use selected item (if it's a **file**, use the **parent folder**)
   - No selection → current Finder window folder
   - No usable window → Desktop
-- **URL Scheme integration** — opens NyaTerm via `nyaterm://connect/local?cwd=<path>`
-- **Find NyaTerm by bundle id** — not hard-coded to `/Applications` only (Launch Services first, then default path)
-- **Error alerts** — failures show an `NSAlert` instead of failing silently
-- **No menu bar / Dock icon** — `LSUIElement = true`; quits right after dispatch
+- **Settings UI** — SwiftUI-based settings window to manage your menu items
+- **Finder Sync Extension** — native toolbar button with dropdown menu
 
 ---
 
@@ -30,9 +32,6 @@ A minimal macOS Finder toolbar app that opens the current directory in [NyaTerm]
 |---|---|
 | macOS | 12.0 Monterey or later |
 | Xcode | 15+ (free from the App Store) |
-| [NyaTerm](https://github.com/nyakang/nyaterm) | Any recent version |
-
-NyaTerm is usually at `/Applications/NyaTerm.app`. Any location Launch Services can find is fine.
 
 ---
 
@@ -40,19 +39,19 @@ NyaTerm is usually at `/Applications/NyaTerm.app`. Any location Launch Services 
 
 ### Option A — Download pre-built app
 
-1. Go to the [Releases page](https://github.com/yaoxinghuo/OpenInNyaTerm/releases), download the latest `OpenInNyaTerm.app.tar.gz`.
+1. Go to the [Releases page](https://github.com/yaoxinghuo/OpenInNyaTerm/releases), download the latest `OpenHere.app.tar.gz`.
 2. Extract it:
    ```bash
-   tar xzf OpenInNyaTerm.app.tar.gz
+   tar xzf OpenHere.app.tar.gz
    ```
-3. Copy `OpenInNyaTerm.app` to `/Applications/`.
+3. Copy `OpenHere.app` to `/Applications/`.
 4. **Remove quarantine** (required for Finder Sync Extension to load, since the app is ad-hoc signed):
    ```bash
-   xattr -cr /Applications/OpenInNyaTerm.app
+   xattr -cr /Applications/OpenHere.app
    ```
-5. **Launch the app** (double-click it) — macOS registers the Finder Sync Extension on first launch.
-6. Open **System Settings → Extensions → Finder Extensions** and enable **OpenInNyaTerm**.
-7. In Finder, go to **View → Customize Toolbar…** and drag the OpenInNyaTerm icon into your toolbar.
+5. **Launch the app** (double-click it) — the settings window appears, and macOS registers the Finder Sync Extension on first launch.
+6. Open **System Settings → Extensions → Finder Extensions** and enable **OpenHere**.
+7. In Finder, go to **View → Customize Toolbar…** and drag the OpenHere icon into your toolbar.
 
 ### Option B — Build from source
 
@@ -64,8 +63,8 @@ NyaTerm is usually at `/Applications/NyaTerm.app`. Any location Launch Services 
 
 2. Build a Release binary:
    ```bash
-   xcodebuild -project OpenInNyaTerm.xcodeproj \
-              -scheme OpenInNyaTerm \
+   xcodebuild -project OpenHere.xcodeproj \
+              -scheme OpenHere \
               -configuration Release \
               -derivedDataPath build \
               build
@@ -73,11 +72,11 @@ NyaTerm is usually at `/Applications/NyaTerm.app`. Any location Launch Services 
 
 3. Copy to Applications:
    ```bash
-   cp -R build/Build/Products/Release/OpenInNyaTerm.app /Applications/
+   cp -R build/Build/Products/Release/OpenHere.app /Applications/
    ```
 
 4. Launch the app, then enable the extension in **System Settings → Extensions → Finder Extensions**.
-5. In Finder, go to **View → Customize Toolbar…** and drag the OpenInNyaTerm icon into your toolbar.
+5. In Finder, go to **View → Customize Toolbar…** and drag the OpenHere icon into your toolbar.
 
 ---
 
@@ -85,12 +84,15 @@ NyaTerm is usually at `/Applications/NyaTerm.app`. Any location Launch Services 
 
 The project has two components:
 
-1. **FinderSyncExtension** — a Finder Sync Extension that provides a native toolbar button (monochrome template icon, adapts to light/dark mode). When clicked, it shows a menu with "Open in NyaTerm". The extension gets the current Finder directory via `FIFinderSyncController`.
+1. **FinderSyncExtension** — a Finder Sync Extension that provides a native toolbar button with a dropdown menu. Menu items are dynamically generated from your configuration. The extension gets the current Finder directory via `FIFinderSyncController` and executes the corresponding action.
 
-2. **OpenInNyaTerm (main app)** — the host app that contains the extension. Also usable standalone by dragging to the toolbar.
+2. **OpenHere (main app)** — the host app that contains the extension and provides a SwiftUI settings window for configuring menu items. Configurations are shared via `UserDefaults` suite.
 
 ```
 Click toolbar button
+       │
+       ▼
+  Dropdown menu shows configured items
        │
        ▼
   FinderSyncExtension gets current path
@@ -101,13 +103,34 @@ Click toolbar button
   └─────────────────────────────────────────────────────────┘
        │
        ▼
-  open nyaterm://connect/local?cwd=<path>
-       │
-       ▼
-  NyaTerm launches / activates at the given path
+  Replace {path} in template → execute action
+  ┌─────────────────────────────────────────────────────────┐
+  │ URL Scheme → NSWorkspace.shared.open(url)               │
+  │ Shell Command → /bin/sh -c "command"                    │
+  └─────────────────────────────────────────────────────────┘
 ```
 
-NyaTerm registers a `nyaterm://` URL Scheme. The extension constructs a URL like `nyaterm://connect/local?cwd=/Users/Terry/Downloads` and asks `NSWorkspace` to open it.
+---
+
+## Configuration
+
+Launch the app to open the settings window. You can:
+
+- **Add** menu items with a display name, action type, and command template
+- **Edit** items inline (name, type, template)
+- **Delete** items
+- **Reorder** items via drag-and-drop
+
+The default configuration includes one item: **Open in Terminal** (`open -a Terminal {path}`).
+
+### Examples
+
+| Name | Type | Template |
+|---|---|---|
+| Open in Terminal | Shell Command | `open -a Terminal {path}` |
+| Open in iTerm | Shell Command | `open -a iTerm {path}` |
+| Open in VS Code | Shell Command | `code {path}` |
+| Open in NyaTerm | URL Scheme | `nyaterm://connect/local?cwd={path}` |
 
 ---
 
@@ -115,17 +138,21 @@ NyaTerm registers a `nyaterm://` URL Scheme. The extension constructs a URL like
 
 ```
 OpenInNyaTerm/
-├── OpenInNyaTerm.xcodeproj/
+├── OpenHere.xcodeproj/
 │   └── project.pbxproj
-├── OpenInNyaTerm/                       # Main app target
-│   ├── main.swift                       # App logic (standalone mode)
+├── OpenHere/                            # Main app target
+│   ├── main.swift                       # App entry point + settings window
+│   ├── SettingsView.swift               # SwiftUI settings UI
 │   ├── Info.plist
-│   ├── OpenInNyaTerm.entitlements
+│   ├── OpenHere.entitlements
 │   └── Assets.xcassets/
-│       └── AppIcon.appiconset/          # Colorful app icon (LaunchPad)
+│       └── AppIcon.appiconset/          # Colorful app icon
+├── Shared/                              # Shared between targets
+│   └── MenuItemConfig.swift             # Data model + shared storage
 ├── FinderSyncExtension/                # Finder Sync Extension target
-│   ├── FinderSync.swift                # Toolbar button + path detection
+│   ├── FinderSync.swift                # Toolbar button + dynamic menu
 │   ├── Info.plist
+│   ├── FinderSyncExtension.entitlements
 │   └── Assets.xcassets/
 │       └── ToolbarIcon.imageset/       # Monochrome template icon
 ├── .github/
@@ -139,15 +166,16 @@ OpenInNyaTerm/
 
 ## Troubleshooting
 
-**Nothing happens when I click the icon**
+**Extension not showing in Finder toolbar**
 
-- Make sure NyaTerm is installed (Spotlight / Launchpad is enough; `/Applications` is not required)
-- Check **System Settings → Privacy & Security → Automation** (OpenInNyaTerm → Finder)
-- If the permission entry is missing: `tccutil reset AppleEvents com.local.OpenInNyaTerm`, then click again
+- Launch the app at least once to register the extension
+- Check **System Settings → Extensions → Finder Extensions** for OpenHere
+- Run `pluginkit -e use -i com.local.OpenHere.FinderSync` to force-enable
 
-**Opens Desktop instead of the current folder**
+**Shell command not working**
 
-- You need at least one non-minimized Finder window, or a selected file/folder
+- Finder Sync Extension runs in a sandbox; some commands may be restricted
+- URL Scheme actions are generally more reliable for app launching
 
 ---
 

@@ -95,8 +95,8 @@ struct MenuItemRow: View {
                     .foregroundStyle(.secondary)
                 TextField(
                     actionType == .urlScheme
-                        ? "nyaterm://connect/local?cwd={path}"
-                        : "/usr/bin/open -a Terminal {path}",
+                        ? "myapp://open?path={path}"
+                        : "open -a Terminal {path}",
                     text: $template
                 )
                 .textFieldStyle(.roundedBorder)
@@ -141,8 +141,8 @@ struct AddItemSheet: View {
 
                 TextField(
                     actionType == .urlScheme
-                        ? "nyaterm://connect/local?cwd={path}"
-                        : "/usr/bin/open -a Terminal {path}",
+                        ? "myapp://open?path={path}"
+                        : "open -a Terminal {path}",
                     text: $template
                 )
                 .textFieldStyle(.roundedBorder)

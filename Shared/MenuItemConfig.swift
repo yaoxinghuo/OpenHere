@@ -22,7 +22,7 @@ struct MenuItemConfig: Codable, Identifiable, Equatable {
 /// Manages menu item configurations stored in a shared UserDefaults suite
 /// accessible by both the main app and the Finder Sync Extension.
 struct MenuConfigStore {
-    static let suiteName = "com.local.OpenInNyaTerm.shared"
+    static let suiteName = "com.local.OpenHere.shared"
     static let key = "menuItems"
 
     static func load() -> [MenuItemConfig] {
@@ -46,9 +46,9 @@ struct MenuConfigStore {
     static func defaultItems() -> [MenuItemConfig] {
         return [
             MenuItemConfig(
-                name: "Open in NyaTerm",
-                actionType: .urlScheme,
-                template: "nyaterm://connect/local?cwd={path}"
+                name: "Open in Terminal",
+                actionType: .shellCommand,
+                template: "open -a Terminal {path}"
             )
         ]
     }

@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		B001000100000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B001000200000001 /* main.swift */; };
 		B001000300000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B001000400000001 /* Assets.xcassets */; };
-		B001001000000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00100A000000001 /* SettingsView.swift */; };
-		B001001100000001 /* MenuItemConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B003000100000001 /* MenuItemConfig.swift */; };
+		B00100B000000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00100A000000001 /* SettingsView.swift */; };
+		B00100C000000001 /* MenuItemConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B003000100000001 /* MenuItemConfig.swift */; };
 		B002000100000001 /* FinderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = B002000400000001 /* FinderSync.swift */; };
 		B002000200000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B002000600000001 /* Assets.xcassets */; };
 		B002000300000001 /* FinderSyncExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B002000700000001 /* FinderSyncExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -18,7 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B001000500000001 /* OpenInNyaTerm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenInNyaTerm.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B001000500000001 /* OpenHere.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenHere.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B001000200000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		B001000400000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B001000600000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -67,7 +67,7 @@
 			isa = PBXGroup;
 			children = (
 				B003000200000001 /* Shared */,
-				B001000900000001 /* OpenInNyaTerm */,
+				B001000900000001 /* OpenHere */,
 				B002000800000001 /* FinderSyncExtension */,
 				B001000A00000001 /* Products */,
 			);
@@ -84,13 +84,13 @@
 		B001000A00000001 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B001000500000001 /* OpenInNyaTerm.app */,
+				B001000500000001 /* OpenHere.app */,
 				B002000700000001 /* FinderSyncExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B001000900000001 /* OpenInNyaTerm */ = {
+		B001000900000001 /* OpenHere */ = {
 			isa = PBXGroup;
 			children = (
 				B001000200000001 /* main.swift */,
@@ -98,7 +98,7 @@
 				B001000400000001 /* Assets.xcassets */,
 				B001000600000001 /* Info.plist */,
 			);
-			path = OpenInNyaTerm;
+			path = OpenHere;
 			sourceTree = "<group>";
 		};
 		B002000800000001 /* FinderSyncExtension */ = {
@@ -115,9 +115,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B001000B00000001 /* OpenInNyaTerm */ = {
+		B001000B00000001 /* OpenHere */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B001000C00000001 /* Build configuration list for PBXNativeTarget "OpenInNyaTerm" */;
+			buildConfigurationList = B001000C00000001 /* Build configuration list for PBXNativeTarget "OpenHere" */;
 			buildPhases = (
 				B001000D00000001 /* Sources */,
 				B001000700000001 /* Frameworks */,
@@ -129,9 +129,9 @@
 			dependencies = (
 				B002000E00000001 /* PBXTargetDependency */,
 			);
-			name = OpenInNyaTerm;
-			productName = OpenInNyaTerm;
-			productReference = B001000500000001 /* OpenInNyaTerm.app */;
+			name = OpenHere;
+			productName = OpenHere;
+			productReference = B001000500000001 /* OpenHere.app */;
 			productType = "com.apple.product-type.application";
 		};
 		B002000900000001 /* FinderSyncExtension */ = {
@@ -169,7 +169,7 @@
 					};
 				};
 			};
-			buildConfigurationList = B001001000000001 /* Build configuration list for PBXProject "OpenInNyaTerm" */;
+			buildConfigurationList = B001001000000001 /* Build configuration list for PBXProject "OpenHere" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -182,7 +182,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B001000B00000001 /* OpenInNyaTerm */,
+				B001000B00000001 /* OpenHere */,
 				B002000900000001 /* FinderSyncExtension */,
 			);
 		};
@@ -213,8 +213,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B001000100000001 /* main.swift in Sources */,
-				B001001000000001 /* SettingsView.swift in Sources */,
-				B001001100000001 /* MenuItemConfig.swift in Sources */,
+				B00100B000000001 /* SettingsView.swift in Sources */,
+				B00100C000000001 /* MenuItemConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,18 +370,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = OpenInNyaTerm/OpenInNyaTerm.entitlements;
+				CODE_SIGN_ENTITLEMENTS = OpenHere/OpenHere.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = OpenInNyaTerm/Info.plist;
+				INFOPLIST_FILE = OpenHere/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.local.OpenInNyaTerm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.OpenHere;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -394,18 +394,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = OpenInNyaTerm/OpenInNyaTerm.entitlements;
+				CODE_SIGN_ENTITLEMENTS = OpenHere/OpenHere.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = OpenInNyaTerm/Info.plist;
+				INFOPLIST_FILE = OpenHere/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.local.OpenInNyaTerm;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.OpenHere;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -427,7 +427,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.local.OpenInNyaTerm.FinderSync;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.OpenHere.FinderSync;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -449,7 +449,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.local.OpenInNyaTerm.FinderSync;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.OpenHere.FinderSync;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -460,7 +460,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B001000C00000001 /* Build configuration list for PBXNativeTarget "OpenInNyaTerm" */ = {
+		B001000C00000001 /* Build configuration list for PBXNativeTarget "OpenHere" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B001001300000001 /* Debug */,
@@ -469,7 +469,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B001001000000001 /* Build configuration list for PBXProject "OpenInNyaTerm" */ = {
+		B001001000000001 /* Build configuration list for PBXProject "OpenHere" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B001001100000001 /* Debug */,
