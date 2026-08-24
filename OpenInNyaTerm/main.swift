@@ -171,13 +171,21 @@ private final class RegistrationDelegate: NSObject, NSApplicationDelegate {
             .appendingPathComponent("PlugIns")
             .appendingPathComponent("FinderSyncExtension.appex")
 
-        // Use pluginkit to register the extension if it exists
+        // Use pluginkit to register and enable the extension
         if FileManager.default.fileExists(atPath: extURL.path) {
-            let task = Process()
-            task.launchPath = "/usr/bin/pluginkit"
-            task.arguments = ["-a", extURL.path]
-            try? task.run()
-            task.waitUntilExit()
+            // Register the extension
+            let registerTask = Process()
+            registerTask.launchPath = "/usr/bin/pluginkit"
+            registerTask.arguments = ["-a", extURL.path]
+            try? registerTask.run()
+            registerTask.waitUntilExit()
+
+            // Enable the extension (ad-hoc signed extensions need explicit enable)
+            let enableTask = Process()
+            enableTask.launchPath = "/usr/bin/pluginkit"
+            enableTask.arguments = ["-e", "use", "-i", "com.local.OpenInNyaTerm.FinderSync"]
+            try? enableTask.run()
+            enableTask.waitUntilExit()
         }
 
         // Also touch the app bundle to trigger Launch Services re-scan
