@@ -62,22 +62,22 @@ jobs:
           codesign --verify --verbose "$EXT_PATH" 2>&1
           codesign --verify --verbose "$APP_PATH" 2>&1
 
-      - name: Zip the app
+      - name: Archive the app
         run: |
           cd build/Build/Products/Release
-          ditto -c -k --keepParent OpenInNyaTerm.app OpenInNyaTerm.app.zip
+          tar czf OpenInNyaTerm.app.tar.gz OpenInNyaTerm.app
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: OpenInNyaTerm-app
-          path: build/Build/Products/Release/OpenInNyaTerm.app.zip
+          path: build/Build/Products/Release/OpenInNyaTerm.app.tar.gz
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: build/Build/Products/Release/OpenInNyaTerm.app.zip
+          files: build/Build/Products/Release/OpenInNyaTerm.app.tar.gz
           draft: false
           prerelease: false
         env:
