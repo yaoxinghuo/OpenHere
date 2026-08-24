@@ -130,6 +130,18 @@ func notifyError(_ message: String) {
 
 // MARK: - Main
 
+// When launched directly (no arguments), keep the app alive briefly so macOS
+// can discover and register the embedded FinderSyncExtension. The extension
+// won't appear in System Settings → Extensions if the host app exits too fast.
+if CommandLine.arguments.count == 1 {
+    // Run a short RunLoop to let the system register the extension
+    let deadline = Date().addingTimeInterval(3)
+    while Date() < deadline {
+        RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+    }
+    exit(0)
+}
+
 let path = finderPath()
 
 guard resolveNyaTermAppURL() != nil else {
