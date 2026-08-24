@@ -1,0 +1,20 @@
+# Build output
+build/
+DerivedData/
+
+# Xcode user data
+*.xcuserstate
+xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# macOS
+.DS_Store
+
+# SwiftPM
+.swiftpm/
+
+# Signing
+*.mobileprovision
+
+# Claude Code
+CLAUDE.md
