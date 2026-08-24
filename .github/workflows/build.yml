@@ -14,6 +14,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: List available schemes
+        run: |
+          xcodebuild -project OpenInNyaTerm.xcodeproj -list
+
       - name: Build Release
         run: |
           xcodebuild -project OpenInNyaTerm.xcodeproj \
