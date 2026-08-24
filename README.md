@@ -40,7 +40,19 @@ NyaTerm is usually at `/Applications/NyaTerm.app`. Any location Launch Services 
 
 ### Option A — Download pre-built app
 
-Go to the [Releases page](https://github.com/yaoxinghuo/OpenInNyaTerm/releases), download the latest `OpenInNyaTerm.app.zip`, unzip it, and copy `OpenInNyaTerm.app` to `/Applications/`.
+1. Go to the [Releases page](https://github.com/yaoxinghuo/OpenInNyaTerm/releases), download the latest `OpenInNyaTerm.app.tar.gz`.
+2. Extract it:
+   ```bash
+   tar xzf OpenInNyaTerm.app.tar.gz
+   ```
+3. Copy `OpenInNyaTerm.app` to `/Applications/`.
+4. **Remove quarantine** (required for Finder Sync Extension to load, since the app is ad-hoc signed):
+   ```bash
+   xattr -cr /Applications/OpenInNyaTerm.app
+   ```
+5. **Launch the app** (double-click it) — macOS registers the Finder Sync Extension on first launch.
+6. Open **System Settings → Extensions → Finder Extensions** and enable **OpenInNyaTerm**.
+7. In Finder, go to **View → Customize Toolbar…** and drag the OpenInNyaTerm icon into your toolbar.
 
 ### Option B — Build from source
 
@@ -64,59 +76,38 @@ Go to the [Releases page](https://github.com/yaoxinghuo/OpenInNyaTerm/releases),
    cp -R build/Build/Products/Release/OpenInNyaTerm.app /Applications/
    ```
 
-   Or open `OpenInNyaTerm.xcodeproj` in Xcode, choose **Product → Archive**, and export manually.
-
-### Add to Finder toolbar
-
-Hold **⌘ (Command)** and drag `/Applications/OpenInNyaTerm.app` into the Finder toolbar.
-
-The first time you click the icon, macOS will show an Apple Events permission dialog — click **Allow** to grant Finder access.
-
-### Reset permissions (if you accidentally denied)
-
-```bash
-tccutil reset AppleEvents com.local.OpenInNyaTerm
-```
-
-Then click the toolbar icon again to re-trigger the prompt.
+4. Launch the app, then enable the extension in **System Settings → Extensions → Finder Extensions**.
+5. In Finder, go to **View → Customize Toolbar…** and drag the OpenInNyaTerm icon into your toolbar.
 
 ---
 
 ## How It Works
 
-The app is a single Swift file (`main.swift`) — no AppDelegate, no event loop.
+The project has two components:
+
+1. **FinderSyncExtension** — a Finder Sync Extension that provides a native toolbar button (monochrome template icon, adapts to light/dark mode). When clicked, it shows a menu with "Open in NyaTerm". The extension gets the current Finder directory via `FIFinderSyncController`.
+
+2. **OpenInNyaTerm (main app)** — the host app that contains the extension. Also usable standalone by dragging to the toolbar.
 
 ```
-Click toolbar icon
+Click toolbar button
        │
        ▼
-  finderPath()
+  FinderSyncExtension gets current path
   ┌─────────────────────────────────────────────────────────┐
-  │ selection? → first item URL (file → parent dir)         │
-  │ else FinderWindows → first window target URL            │
+  │ selected item? → use it (file → parent dir)             │
+  │ else targetedURL → current Finder window folder         │
   │ else ~/Desktop                                          │
   └─────────────────────────────────────────────────────────┘
-       │
-       ▼
-  resolve NyaTerm.app (bundle id → default path)
        │
        ▼
   open nyaterm://connect/local?cwd=<path>
        │
        ▼
   NyaTerm launches / activates at the given path
-       │
-       ▼
-  Error? → NSAlert
-       │
-     exit
 ```
 
-NyaTerm registers a `nyaterm://` URL Scheme. The app constructs a URL like `nyaterm://connect/local?cwd=/Users/Terry/Downloads` and asks `NSWorkspace` to open it, which launches or activates NyaTerm with the specified working directory.
-
-**Why `perform(NSSelectorFromString:)` instead of a ScriptingBridge protocol?**
-
-Swift's `@objc optional` protocol calls check `respondsToSelector:` first. ScriptingBridge's private `SBScriptableApplication` subclass returns `false` for dynamically-forwarded Apple Event methods, so every call silently returned `nil` — and critically, the TCC permission dialog never appeared. Using `perform()` bypasses the selector check and lets ScriptingBridge forward the message as a proper Apple Event.
+NyaTerm registers a `nyaterm://` URL Scheme. The extension constructs a URL like `nyaterm://connect/local?cwd=/Users/Terry/Downloads` and asks `NSWorkspace` to open it.
 
 ---
 
@@ -126,17 +117,22 @@ Swift's `@objc optional` protocol calls check `respondsToSelector:` first. Scrip
 OpenInNyaTerm/
 ├── OpenInNyaTerm.xcodeproj/
 │   └── project.pbxproj
-├── OpenInNyaTerm/
-│   ├── main.swift                  # All app logic
-│   ├── Info.plist                  # LSUIElement=true, usage descriptions
-│   ├── OpenInNyaTerm.entitlements  # Apple Events entitlement
+├── OpenInNyaTerm/                       # Main app target
+│   ├── main.swift                       # App logic (standalone mode)
+│   ├── Info.plist
+│   ├── OpenInNyaTerm.entitlements
 │   └── Assets.xcassets/
-│       └── AppIcon.appiconset/     # App icon
+│       └── AppIcon.appiconset/          # Colorful app icon (LaunchPad)
+├── FinderSyncExtension/                # Finder Sync Extension target
+│   ├── FinderSync.swift                # Toolbar button + path detection
+│   ├── Info.plist
+│   └── Assets.xcassets/
+│       └── ToolbarIcon.imageset/       # Monochrome template icon
 ├── .github/
 │   └── workflows/
-│       └── build.yml               # CI: build & release on tag push
-├── README.md                       # English (default)
-└── README-zh.md                    # Chinese
+│       └── build.yml                   # CI: build & release on tag push
+├── README.md                            # English (default)
+└── README-zh.md                         # Chinese
 ```
 
 ---

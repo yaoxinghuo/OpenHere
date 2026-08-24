@@ -40,7 +40,19 @@ NyaTerm 通常装在 `/Applications/NyaTerm.app`。装在 Launch Services 能扫
 
 ### 方式 A — 下载预编译版本
 
-前往 [Releases 页面](https://github.com/yaoxinghuo/OpenInNyaTerm/releases)，下载最新的 `OpenInNyaTerm.app.zip`，解压后将 `OpenInNyaTerm.app` 拖到 `/Applications/`。
+1. 前往 [Releases 页面](https://github.com/yaoxinghuo/OpenInNyaTerm/releases)，下载最新的 `OpenInNyaTerm.app.tar.gz`。
+2. 解压：
+   ```bash
+   tar xzf OpenInNyaTerm.app.tar.gz
+   ```
+3. 将 `OpenInNyaTerm.app` 拖到 `/Applications/`。
+4. **移除隔离属性**（由于 app 使用 ad-hoc 签名，Finder Sync Extension 需要移除隔离属性才能加载）：
+   ```bash
+   xattr -cr /Applications/OpenInNyaTerm.app
+   ```
+5. **启动 app**（双击打开）——macOS 会在首次启动时注册 Finder Sync Extension。
+6. 打开 **系统设置 → 扩展 → Finder 扩展**，启用 **OpenInNyaTerm**。
+7. 在 Finder 中，选择 **查看 → 自定义工具栏…**，将 OpenInNyaTerm 图标拖到工具栏。
 
 ### 方式 B — 从源码编译
 
@@ -64,59 +76,38 @@ NyaTerm 通常装在 `/Applications/NyaTerm.app`。装在 Launch Services 能扫
    cp -R build/Build/Products/Release/OpenInNyaTerm.app /Applications/
    ```
 
-   或用 Xcode 打开 `OpenInNyaTerm.xcodeproj`，选择 **Product → Archive** 后导出。
-
-### 添加到 Finder 工具栏
-
-按住 **⌘ (Command)**，把 `/Applications/OpenInNyaTerm.app` 拖到 Finder 工具栏。
-
-第一次点击图标时，macOS 会弹出 Apple Events 权限对话框——点 **允许** 以授予 Finder 访问。
-
-### 重置权限（如果不小心点了拒绝）
-
-```bash
-tccutil reset AppleEvents com.local.OpenInNyaTerm
-```
-
-然后再次点击工具栏图标以重新触发提示。
+4. 启动 app，然后在 **系统设置 → 扩展 → Finder 扩展** 中启用 OpenInNyaTerm。
+5. 在 Finder 中，选择 **查看 → 自定义工具栏…**，将 OpenInNyaTerm 图标拖到工具栏。
 
 ---
 
 ## 工作原理
 
-整个 app 就是一个 Swift 文件（`main.swift`）——没有 AppDelegate，也没有常驻事件循环。
+项目包含两个组件：
+
+1. **FinderSyncExtension** — Finder Sync 扩展，提供原生工具栏按钮（单色模板图标，自动适配深色/浅色模式）。点击后显示"Open in NyaTerm"菜单项。扩展通过 `FIFinderSyncController` 获取当前 Finder 目录。
+
+2. **OpenInNyaTerm（主 app）** — 包含扩展的宿主 app。也可独立使用（拖到工具栏）。
 
 ```
-点击工具栏图标
+点击工具栏按钮
        │
        ▼
-  finderPath()
+  FinderSyncExtension 获取当前路径
   ┌─────────────────────────────────────────────────────────┐
-  │ selection? → 第一项 URL（文件 → 父目录）                │
-  │ else FinderWindows → 第一个窗口 target URL              │
-  │ else ~/Desktop                                          │
+  │ 有选中项？ → 用选中项（文件 → 父目录）                  │
+  │ 否则 targetedURL → 当前 Finder 窗口文件夹               │
+  │ 否则 ~/Desktop                                          │
   └─────────────────────────────────────────────────────────┘
-       │
-       ▼
-  解析 NyaTerm.app（bundle id → 默认路径）
        │
        ▼
   打开 nyaterm://connect/local?cwd=<path>
        │
        ▼
   NyaTerm 启动 / 激活并切换到指定目录
-       │
-       ▼
-  出错？ → NSAlert
-       │
-     exit
 ```
 
-NyaTerm 注册了 `nyaterm://` URL Scheme。本 app 构造一个类似 `nyaterm://connect/local?cwd=/Users/Terry/Downloads` 的 URL，然后通过 `NSWorkspace` 打开它，系统会启动或激活 NyaTerm 并切换到指定的工作目录。
-
-**为什么用 `perform(NSSelectorFromString:)` 而不是 ScriptingBridge 协议？**
-
-Swift 的 `@objc optional` 协议调用会先检查 `respondsToSelector:`。ScriptingBridge 的私有 `SBScriptableApplication` 对动态转发的方法会返回 `false`，于是调用静默得到 `nil`——更关键的是，TCC 权限对话框永远不会弹出。使用 `perform()` 可以绕过 selector 检查，让 ScriptingBridge 真正发出 Apple Event。
+NyaTerm 注册了 `nyaterm://` URL Scheme。扩展构造一个类似 `nyaterm://connect/local?cwd=/Users/Terry/Downloads` 的 URL，然后通过 `NSWorkspace` 打开它。
 
 ---
 
@@ -126,17 +117,22 @@ Swift 的 `@objc optional` 协议调用会先检查 `respondsToSelector:`。Scri
 OpenInNyaTerm/
 ├── OpenInNyaTerm.xcodeproj/
 │   └── project.pbxproj
-├── OpenInNyaTerm/
-│   ├── main.swift                  # 全部逻辑
-│   ├── Info.plist                  # LSUIElement=true、用途说明
-│   ├── OpenInNyaTerm.entitlements  # Apple Events 权限
+├── OpenInNyaTerm/                       # 主 app target
+│   ├── main.swift                       # app 逻辑（独立模式）
+│   ├── Info.plist
+│   ├── OpenInNyaTerm.entitlements
 │   └── Assets.xcassets/
-│       └── AppIcon.appiconset/     # 应用图标
+│       └── AppIcon.appiconset/          # 彩色应用图标（LaunchPad）
+├── FinderSyncExtension/                # Finder Sync 扩展 target
+│   ├── FinderSync.swift                 # 工具栏按钮 + 路径检测
+│   ├── Info.plist
+│   └── Assets.xcassets/
+│       └── ToolbarIcon.imageset/       # 单色模板图标
 ├── .github/
 │   └── workflows/
-│       └── build.yml               # CI：tag 推送时构建并发布
-├── README.md                       # 英文（默认）
-└── README-zh.md                    # 中文
+│       └── build.yml                   # CI：tag 推送时构建并发布
+├── README.md                            # 英文（默认）
+└── README-zh.md                         # 中文
 ```
 
 ---
