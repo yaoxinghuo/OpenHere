@@ -22,12 +22,6 @@ class FinderSync: FIFinderSync {
         return NSImage(named: "ToolbarIcon")!
     }
 
-    // Clicking the toolbar button directly opens NyaTerm (no dropdown menu).
-    // We still provide menu(for:) for context menus (right-click / ctrl-click).
-    override func toolbarItemAction(_ sender: AnyObject?) {
-        openInNyaTerm(sender)
-    }
-
     // MARK: - Menu
 
     override func menu(for menuKind: FIMenuKind) -> NSMenu? {
