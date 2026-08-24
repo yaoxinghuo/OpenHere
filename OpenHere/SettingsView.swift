@@ -107,9 +107,9 @@ struct MenuItemRow: View {
             }
         }
         .padding(.vertical, 4)
-        .onChange(of: name) { _, _ in commit() }
-        .onChange(of: actionType) { _, _ in commit() }
-        .onChange(of: template) { _, _ in commit() }
+        .onChange(of: name) { _ in commit() }
+        .onChange(of: actionType) { _ in commit() }
+        .onChange(of: template) { _ in commit() }
     }
 
     private func commit() {
