@@ -22,10 +22,8 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
-	<key>LSUIElement</key>
-	<true/>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>OpenInNyaTerm 需要访问 Finder 以获取当前目录路径。</string>
+	<string>OpenInNyaTerm needs access to Finder to get the current directory path.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

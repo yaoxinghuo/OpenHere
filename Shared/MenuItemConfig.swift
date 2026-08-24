@@ -1,0 +1,60 @@
+import Foundation
+
+enum MenuItemActionType: String, Codable, CaseIterable {
+    case urlScheme = "URL Scheme"
+    case shellCommand = "Shell Command"
+}
+
+struct MenuItemConfig: Codable, Identifiable, Equatable {
+    var id: UUID
+    var name: String
+    var actionType: MenuItemActionType
+    var template: String
+
+    init(id: UUID = UUID(), name: String, actionType: MenuItemActionType, template: String) {
+        self.id = id
+        self.name = name
+        self.actionType = actionType
+        self.template = template
+    }
+}
+
+/// Manages menu item configurations stored in a shared UserDefaults suite
+/// accessible by both the main app and the Finder Sync Extension.
+struct MenuConfigStore {
+    static let suiteName = "com.local.OpenInNyaTerm.shared"
+    static let key = "menuItems"
+
+    static func load() -> [MenuItemConfig] {
+        let defaults = UserDefaults(suiteName: suiteName)
+        guard let data = defaults?.data(forKey: key) else {
+            return defaultItems()
+        }
+        return (try? JSONDecoder().decode([MenuItemConfig].self, from: data)) ?? defaultItems()
+    }
+
+    static func save(_ items: [MenuItemConfig]) {
+        let defaults = UserDefaults(suiteName: suiteName)
+        if let data = try? JSONEncoder().encode(items) {
+            defaults?.set(data, forKey: key)
+        }
+    }
+
+    /// `{path}` is the placeholder for the current Finder directory.
+    static let pathPlaceholder = "{path}"
+
+    static func defaultItems() -> [MenuItemConfig] {
+        return [
+            MenuItemConfig(
+                name: "Open in NyaTerm",
+                actionType: .urlScheme,
+                template: "nyaterm://connect/local?cwd={path}"
+            )
+        ]
+    }
+
+    /// Resolve the template by replacing {path} with the given directory path.
+    static func resolveTemplate(_ template: String, path: String) -> String {
+        template.replacingOccurrences(of: pathPlaceholder, with: path)
+    }
+}

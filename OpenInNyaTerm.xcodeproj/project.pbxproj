@@ -9,9 +9,12 @@
 /* Begin PBXBuildFile section */
 		B001000100000001 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B001000200000001 /* main.swift */; };
 		B001000300000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B001000400000001 /* Assets.xcassets */; };
+		B001001000000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00100A000000001 /* SettingsView.swift */; };
+		B001001100000001 /* MenuItemConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B003000100000001 /* MenuItemConfig.swift */; };
 		B002000100000001 /* FinderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = B002000400000001 /* FinderSync.swift */; };
 		B002000200000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B002000600000001 /* Assets.xcassets */; };
 		B002000300000001 /* FinderSyncExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B002000700000001 /* FinderSyncExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B002001000000001 /* MenuItemConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B003000100000001 /* MenuItemConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,11 +22,13 @@
 		B001000200000001 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		B001000400000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B001000600000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B00100A000000001 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B002000400000001 /* FinderSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderSync.swift; sourceTree = "<group>"; };
 		B002000500000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B002000600000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B0020007000010001 /* FinderSyncExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FinderSyncExtension.entitlements; sourceTree = "<group>"; };
 		B002000700000001 /* FinderSyncExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FinderSyncExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B003000100000001 /* MenuItemConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,10 +66,19 @@
 		B001000800000001 = {
 			isa = PBXGroup;
 			children = (
+				B003000200000001 /* Shared */,
 				B001000900000001 /* OpenInNyaTerm */,
 				B002000800000001 /* FinderSyncExtension */,
 				B001000A00000001 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		B003000200000001 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				B003000100000001 /* MenuItemConfig.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		B001000A00000001 /* Products */ = {
@@ -80,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				B001000200000001 /* main.swift */,
+				B00100A000000001 /* SettingsView.swift */,
 				B001000400000001 /* Assets.xcassets */,
 				B001000600000001 /* Info.plist */,
 			);
@@ -198,6 +213,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B001000100000001 /* main.swift in Sources */,
+				B001001000000001 /* SettingsView.swift in Sources */,
+				B001001100000001 /* MenuItemConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -206,6 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B002000100000001 /* FinderSync.swift in Sources */,
+				B002001000000001 /* MenuItemConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
