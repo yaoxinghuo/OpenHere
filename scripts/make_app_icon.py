@@ -31,8 +31,22 @@ TOOLBAR_SIZES = {
 }
 
 
-def write_icons(src: Image.Image, sizes: dict[str, int], dest_dir: Path) -> None:
+def write_icons(src: Image.Image, sizes: dict[str, int], dest_dir: Path, pad_square: bool = False) -> None:
     dest_dir.mkdir(parents=True, exist_ok=True)
+    # Auto-crop transparent padding so the icon content fills the canvas.
+    # The source SVG/PNG may have significant whitespace around the actual
+    # drawing, which makes the resulting toolbar icon appear too small.
+    bbox = src.getbbox()
+    if bbox and bbox != (0, 0, src.width, src.height):
+        src = src.crop(bbox)
+        print(f"  auto-cropped to {src.size}")
+    # Pad to square to preserve aspect ratio when resizing to square icons.
+    if pad_square and src.width != src.height:
+        max_dim = max(src.width, src.height)
+        padded = Image.new("RGBA", (max_dim, max_dim), (0, 0, 0, 0))
+        padded.paste(src, ((max_dim - src.width) // 2, (max_dim - src.height) // 2))
+        src = padded
+        print(f"  padded to square {src.size}")
     for name, size in sizes.items():
         src.resize((size, size), Image.Resampling.LANCZOS).save(dest_dir / name)
         print(f"  wrote {name}")
@@ -67,7 +81,7 @@ def main() -> None:
     tb_src = Image.open(args.toolbar_icon).convert("RGBA")
     print(f"Toolbar icon source: {tb_src.size}")
     print(f"Writing ToolbarIcon → {TOOLBAR}")
-    write_icons(tb_src, TOOLBAR_SIZES, TOOLBAR)
+    write_icons(tb_src, TOOLBAR_SIZES, TOOLBAR, pad_square=True)
 
     print("done")
 

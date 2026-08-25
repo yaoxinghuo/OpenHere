@@ -8,7 +8,7 @@ struct SettingsView: View {
     var body: some View {
         VStack(spacing: 0) {
             List(selection: $selectedItemID) {
-                ForEach(items) { item in
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                     MenuItemRow(item: item, onUpdate: { updated in
                         if let idx = items.firstIndex(where: { $0.id == item.id }) {
                             items[idx] = updated
@@ -18,6 +18,11 @@ struct SettingsView: View {
                         MenuConfigStore.save(items)
                     })
                     .tag(item.id)
+                    .listRowBackground(
+                        index % 2 == 0
+                            ? Color(nsColor: .controlBackgroundColor)
+                            : Color(nsColor: .textBackgroundColor).opacity(0.5)
+                    )
                 }
             }
             .listStyle(.inset)
@@ -54,11 +59,16 @@ struct SettingsView: View {
             MenuConfigStore.save(items)
         }
         .sheet(isPresented: $showAddSheet) {
-            AddItemSheet { newItem in
-                items.append(newItem)
-                MenuConfigStore.save(items)
-                showAddSheet = false
-            }
+            AddItemSheet(
+                onAdd: { newItem in
+                    items.append(newItem)
+                    MenuConfigStore.save(items)
+                    showAddSheet = false
+                },
+                onCancel: {
+                    showAddSheet = false
+                }
+            )
         }
     }
 
@@ -152,6 +162,7 @@ struct AddItemSheet: View {
     @State private var actionType: MenuItemActionType = .urlScheme
     @State private var template = ""
     let onAdd: (MenuItemConfig) -> Void
+    let onCancel: () -> Void
 
     var body: some View {
         VStack(spacing: 16) {
@@ -184,8 +195,9 @@ struct AddItemSheet: View {
 
             HStack {
                 Button("Cancel") {
-                    NSApp.keyWindow?.close()
+                    onCancel()
                 }
+                .keyboardShortcut(.cancelAction)
                 Spacer()
                 Button("Add") {
                     let item = MenuItemConfig(
