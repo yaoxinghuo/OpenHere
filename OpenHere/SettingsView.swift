@@ -12,6 +12,7 @@ struct SettingsView: View {
                     MenuItemRow(item: item, onUpdate: { updated in
                         if let idx = items.firstIndex(where: { $0.id == item.id }) {
                             items[idx] = updated
+                            MenuConfigStore.save(items)
                         }
                     }, onDelete: {
                         items.removeAll { $0.id == item.id }
@@ -20,8 +21,8 @@ struct SettingsView: View {
                     .tag(item.id)
                     .listRowBackground(
                         index % 2 == 0
-                            ? Color(nsColor: .controlBackgroundColor)
-                            : Color(nsColor: .textBackgroundColor).opacity(0.5)
+                            ? Color.clear
+                            : Color(nsColor: .underPageBackgroundColor).opacity(0.3)
                     )
                 }
             }

@@ -31,15 +31,16 @@ TOOLBAR_SIZES = {
 }
 
 
-def write_icons(src: Image.Image, sizes: dict[str, int], dest_dir: Path, pad_square: bool = False) -> None:
+def write_icons(src: Image.Image, sizes: dict[str, int], dest_dir: Path, auto_crop: bool = False, pad_square: bool = False) -> None:
     dest_dir.mkdir(parents=True, exist_ok=True)
-    # Auto-crop transparent padding so the icon content fills the canvas.
-    # The source SVG/PNG may have significant whitespace around the actual
-    # drawing, which makes the resulting toolbar icon appear too small.
-    bbox = src.getbbox()
-    if bbox and bbox != (0, 0, src.width, src.height):
-        src = src.crop(bbox)
-        print(f"  auto-cropped to {src.size}")
+    # Auto-crop transparent padding — only for toolbar icons where we want
+    # the content to fill the small 16x16 canvas. macOS app icons should
+    # keep their built-in padding per Apple's icon design guidelines.
+    if auto_crop:
+        bbox = src.getbbox()
+        if bbox and bbox != (0, 0, src.width, src.height):
+            src = src.crop(bbox)
+            print(f"  auto-cropped to {src.size}")
     # Pad to square to preserve aspect ratio when resizing to square icons.
     if pad_square and src.width != src.height:
         max_dim = max(src.width, src.height)
@@ -81,7 +82,7 @@ def main() -> None:
     tb_src = Image.open(args.toolbar_icon).convert("RGBA")
     print(f"Toolbar icon source: {tb_src.size}")
     print(f"Writing ToolbarIcon → {TOOLBAR}")
-    write_icons(tb_src, TOOLBAR_SIZES, TOOLBAR, pad_square=True)
+    write_icons(tb_src, TOOLBAR_SIZES, TOOLBAR, auto_crop=True, pad_square=True)
 
     print("done")
 
