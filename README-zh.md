@@ -13,9 +13,10 @@
 <!-- 截图 -->
 
 <p align="center">
-  <img src="" alt="设置页面" width="480" />
+  <img width="1736" height="608" alt="image" src="https://github.com/user-attachments/assets/fa66d004-6d57-421f-90cd-bd842453047e" />
   &nbsp;&nbsp;
-  <img src="" alt="Finder 工具栏下拉菜单" width="480" />
+  <img width="1040" height="776" alt="image" src="https://github.com/user-attachments/assets/4201359b-efb1-4fe2-a081-a088a15f76fd" />
+
 </p>
 
 ---
