@@ -51,7 +51,7 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
 
 ### Option A — Download pre-built app
 
-1. Go to the [Releases page](https://github.com/yaoxinghuo/OpenInNyaTerm/releases), download the latest `OpenHere.app.tar.gz`.
+1. Go to the [Releases page](https://github.com/yaoxinghuo/OpenHere/releases), download the latest `OpenHere.app.tar.gz`.
 2. Extract it:
    ```bash
    tar xzf OpenHere.app.tar.gz
@@ -69,8 +69,8 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/yaoxinghuo/OpenInNyaTerm.git
-   cd OpenInNyaTerm
+   git clone https://github.com/yaoxinghuo/OpenHere.git
+   cd OpenHere
    ```
 
 2. Build a Release binary:
@@ -149,7 +149,7 @@ The default configuration includes one item: **Open in Terminal** (`open -a Term
 ## Project Structure
 
 ```
-OpenInNyaTerm/
+OpenHere/
 ├── OpenHere.xcodeproj/
 │   └── project.pbxproj
 ├── OpenHere/                            # Main app target

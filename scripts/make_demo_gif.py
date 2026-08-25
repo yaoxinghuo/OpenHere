@@ -2,12 +2,12 @@
 """Build demo media from real Finder + NyaTerm captures.
 
 Outputs (under assets/):
-  openinyaterm-demo.gif  — README default (ffmpeg palettegen, sharpest GIF)
-  openinyaterm-demo.mp4  — true-color H.264 (for local / site use)
-  openinyaterm-demo.png  — static 3-panel storyboard (always sharp)
+  openhere-demo.gif  — README default (ffmpeg palettegen, sharpest GIF)
+  openhere-demo.mp4  — true-color H.264 (for local / site use)
+  openhere-demo.png  — static 3-panel storyboard (always sharp)
 
 Sources (assets/sources/):
-  finder-window.png  — Finder with OpenInNyaTerm already on the toolbar
+  finder-window.png  — Finder with OpenHere already on the toolbar
   nyaterm-window.png — NyaTerm at the same path
 
   python3 scripts/make_demo_gif.py
@@ -134,7 +134,7 @@ def caption(base: Image.Image, text: str) -> None:
 
 def footer(base: Image.Image) -> None:
     d = ImageDraw.Draw(base)
-    text = "OpenInNyaTerm  |  Finder to NyaTerm"
+    text = "OpenHere  |  Finder to NyaTerm"
     tw, th = tsize(d, text, F_FOOT)
     d.text((CANVAS_W - tw - 16, CANVAS_H - th - 12), text, font=F_FOOT, fill=(140, 146, 156))
 
@@ -160,8 +160,8 @@ def cursor(base: Image.Image, x: int, y: int, click: bool = False) -> None:
         base.alpha_composite(ov)
 
 
-def find_openinyaterm_toolbar_icon(finder: Image.Image) -> tuple[int, int]:
-    """Locate the real OpenInNyaTerm toolbar icon already present in the capture.
+def find_openhere_toolbar_icon(finder: Image.Image) -> tuple[int, int]:
+    """Locate the real OpenHere toolbar icon already present in the capture.
 
     On Sequoia Finder it is the first custom toolbar button after the window
     title — a rounded square with a ``>_`` glyph (template gray).
@@ -207,14 +207,14 @@ def find_openinyaterm_toolbar_icon(finder: Image.Image) -> tuple[int, int]:
     if not icon_clusters:
         icon_clusters = clusters
 
-    # First toolbar custom icon after the title = OpenInNyaTerm
+    # First toolbar custom icon after the title = OpenHere
     a, b = icon_clusters[0]
     cx = x0 + (a + b) // 2
     cy = y0 + mid
     return cx, cy
 
 
-def draw_callout(base: Image.Image, cx: int, cy: int, text: str = "OpenInNyaTerm") -> None:
+def draw_callout(base: Image.Image, cx: int, cy: int, text: str = "OpenHere") -> None:
     """Label the existing toolbar icon (does not draw a fake icon)."""
     d = ImageDraw.Draw(base)
     tw, th = tsize(d, text, F_LABEL)
@@ -243,7 +243,7 @@ def build_frames() -> list[Image.Image]:
     nyaterm_raw = trim_letterbox(Image.open(NYATERM), threshold=6)
 
     # Use the real toolbar icon already in the Finder capture — never paste a fake one
-    icon_center = find_openinyaterm_toolbar_icon(finder_raw)
+    icon_center = find_openhere_toolbar_icon(finder_raw)
 
     finder = with_shadow(round_mask(finder_raw))
     nyaterm = with_shadow(round_mask(nyaterm_raw))
@@ -293,14 +293,14 @@ def build_frames() -> list[Image.Image]:
         y = int(cy0 + (tb_y - cy0) * t)
         frames.append(
             scene_finder(
-                x, y, "Click OpenInNyaTerm on the Finder toolbar", callout=True
+                x, y, "Click OpenHere on the Finder toolbar", callout=True
             ).convert("RGB")
         )
 
     frames.extend(
         [
             scene_finder(
-                tb_x, tb_y, "Click OpenInNyaTerm on the Finder toolbar", callout=True
+                tb_x, tb_y, "Click OpenHere on the Finder toolbar", callout=True
             ).convert("RGB")
         ]
         * nf(300)
@@ -340,7 +340,7 @@ def build_frames() -> list[Image.Image]:
     oy_hold = (CANVAS_H - nyaterm_s.size[1]) // 2 - 8
 
     for text, hold_ms in (
-        ("cwd = ~/Documents/SideProjects/openinyaterm", 1500),
+        ("cwd = ~/Documents/SideProjects/openhere", 1500),
         ("Running: new tab  |  Not running: launch", 1600),
     ):
         img = desktop.copy()
@@ -548,12 +548,12 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Static storyboard — zero animation compression, always sharp
-    write_static_storyboard(frames, OUT_DIR / "openinyaterm-demo.png")
+    write_static_storyboard(frames, OUT_DIR / "openhere-demo.png")
 
-    gif_out = OUT_DIR / "openinyaterm-demo.gif"
-    mp4_out = OUT_DIR / "openinyaterm-demo.mp4"
+    gif_out = OUT_DIR / "openhere-demo.gif"
+    mp4_out = OUT_DIR / "openhere-demo.mp4"
 
-    with tempfile.TemporaryDirectory(prefix="openinyaterm-demo-") as td:
+    with tempfile.TemporaryDirectory(prefix="openhere-demo-") as td:
         tdp = Path(td)
         export_png_sequence(frames, tdp)
 
@@ -567,7 +567,7 @@ def main() -> None:
             print("  tip: install/fix ffmpeg for MP4 output (`brew reinstall ffmpeg`)")
 
     print(f"  {len(frames)} frames @ {FPS}fps, canvas {CANVAS_W}x{CANVAS_H}")
-    print("  README: use assets/openinyaterm-demo.gif  |  sharp static: openinyaterm-demo.png")
+    print("  README: use assets/openhere-demo.gif  |  sharp static: openhere-demo.png")
 
 
 if __name__ == "__main__":

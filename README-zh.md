@@ -51,7 +51,7 @@
 
 ### 方式 A — 下载预编译版本
 
-1. 前往 [Releases 页面](https://github.com/yaoxinghuo/OpenInNyaTerm/releases)，下载最新的 `OpenHere.app.tar.gz`。
+1. 前往 [Releases 页面](https://github.com/yaoxinghuo/OpenHere/releases)，下载最新的 `OpenHere.app.tar.gz`。
 2. 解压：
    ```bash
    tar xzf OpenHere.app.tar.gz
@@ -69,8 +69,8 @@
 
 1. 克隆仓库：
    ```bash
-   git clone https://github.com/yaoxinghuo/OpenInNyaTerm.git
-   cd OpenInNyaTerm
+   git clone https://github.com/yaoxinghuo/OpenHere.git
+   cd OpenHere
    ```
 
 2. 编译 Release：
@@ -149,7 +149,7 @@
 ## 项目结构
 
 ```
-OpenInNyaTerm/
+OpenHere/
 ├── OpenHere.xcodeproj/
 │   └── project.pbxproj
 ├── OpenHere/                            # 主 app target
