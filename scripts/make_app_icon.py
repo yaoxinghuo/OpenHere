@@ -31,7 +31,7 @@ TOOLBAR_SIZES = {
 }
 
 
-def write_icons(src: Image.Image, sizes: dict[str, int], dest_dir: Path, auto_crop: bool = False, pad_square: bool = False) -> None:
+def write_icons(src: Image.Image, sizes: dict[str, int], dest_dir: Path, auto_crop: bool = False, pad_square: bool = False, pad_ratio: float = 0.0) -> None:
     dest_dir.mkdir(parents=True, exist_ok=True)
     # Auto-crop transparent padding — only for toolbar icons where we want
     # the content to fill the small 16x16 canvas. macOS app icons should
@@ -48,6 +48,15 @@ def write_icons(src: Image.Image, sizes: dict[str, int], dest_dir: Path, auto_cr
         padded.paste(src, ((max_dim - src.width) // 2, (max_dim - src.height) // 2))
         src = padded
         print(f"  padded to square {src.size}")
+    # Add transparent margin around the icon (pad_ratio of each dimension).
+    # macOS HIG recommends ~10% padding on each side for app icons.
+    if pad_ratio > 0:
+        new_w = int(src.width * (1 + pad_ratio * 2))
+        new_h = int(src.height * (1 + pad_ratio * 2))
+        padded = Image.new("RGBA", (new_w, new_h), (0, 0, 0, 0))
+        padded.paste(src, ((new_w - src.width) // 2, (new_h - src.height) // 2))
+        src = padded
+        print(f"  added {pad_ratio:.0%} padding → {src.size}")
     for name, size in sizes.items():
         src.resize((size, size), Image.Resampling.LANCZOS).save(dest_dir / name)
         print(f"  wrote {name}")
@@ -77,7 +86,7 @@ def main() -> None:
     app_src = Image.open(args.app_icon).convert("RGBA")
     print(f"App icon source: {app_src.size}")
     print(f"Writing AppIcon → {ICONSET}")
-    write_icons(app_src, APP_ICON_SIZES, ICONSET)
+    write_icons(app_src, APP_ICON_SIZES, ICONSET, pad_ratio=0.12)
 
     tb_src = Image.open(args.toolbar_icon).convert("RGBA")
     print(f"Toolbar icon source: {tb_src.size}")
