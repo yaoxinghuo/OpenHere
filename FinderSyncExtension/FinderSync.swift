@@ -3,6 +3,14 @@ import Cocoa
 
 class FinderSync: FIFinderSync {
 
+    /// Cached menu items for the current menu invocation.
+    /// Finder Sync extensions are XPC services: the menu is shown by the Finder
+    /// process and the action is sent back via XPC. representedObject (a Swift
+    /// struct boxed as __SwiftValue) does NOT survive this round-trip because it
+    /// doesn't conform to NSSecureCoding. So we cache the items here and use the
+    /// menu item's tag as an index.
+    private var cachedMenuItems: [MenuItemConfig] = []
+
     override init() {
         super.init()
         FIFinderSyncController.default().directoryURLs = [URL(fileURLWithPath: "/")]
@@ -28,14 +36,16 @@ class FinderSync: FIFinderSync {
         let items = MenuConfigStore.load()
         guard !items.isEmpty else { return nil }
 
+        cachedMenuItems = items
+
         let menu = NSMenu(title: "")
-        for item in items {
+        for (index, item) in items.enumerated() {
             let menuItem = NSMenuItem(
                 title: item.name,
                 action: #selector(menuItemAction(_:)),
                 keyEquivalent: ""
             )
-            menuItem.representedObject = item
+            menuItem.tag = index
             menu.addItem(menuItem)
         }
         return menu
@@ -44,10 +54,12 @@ class FinderSync: FIFinderSync {
     // MARK: - Actions
 
     @IBAction func menuItemAction(_ sender: NSMenuItem) {
-        guard let config = sender.representedObject as? MenuItemConfig else {
-            NSLog("[OpenHere] menuItemAction: representedObject cast failed")
+        let index = sender.tag
+        guard index >= 0, index < cachedMenuItems.count else {
+            NSLog("[OpenHere] menuItemAction: invalid tag %d, cached count %d", index, cachedMenuItems.count)
             return
         }
+        let config = cachedMenuItems[index]
 
         let path = currentPath()
         NSLog("[OpenHere] menuItemAction: name=%@ type=%@ path=%@", config.name, config.actionType.rawValue, path)
