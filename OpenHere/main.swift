@@ -17,6 +17,20 @@ app.run()
 private final class AppDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow?
     private var launchedViaURL = false
+    private var didFinishLaunching = false
+
+    /// application(_:open:) is delivered AFTER applicationDidFinishLaunching(_:) completes,
+    /// so a flag set there arrives too late to influence the finishLaunching branch below.
+    /// Intercept the raw "get URL" Apple Event instead, registered here (before launch
+    /// finishes) so `launchedViaURL` is already correct by the time finishLaunching runs.
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        NSAppleEventManager.shared().setEventHandler(
+            self,
+            andSelector: #selector(handleGetURLEvent(_:withReplyEvent:)),
+            forEventClass: AEEventClass(kInternetEventClass),
+            andEventID: AEEventID(kAEGetURL)
+        )
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         if launchedViaURL {
@@ -28,6 +42,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 
         showSettingsWindow()
         registerExtension()
+        didFinishLaunching = true
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -36,22 +51,31 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Handle openhere:// URL scheme — used by the FinderSyncExtension to delegate
     /// shell command execution. The app launches, executes the command, and quits.
-    func application(_ application: NSApplication, open urls: [URL]) {
-        launchedViaURL = true
-        for url in urls {
-            guard url.scheme == "openhere" else { continue }
+    @objc private func handleGetURLEvent(_ event: NSAppleEventDescriptor, withReplyEvent replyEvent: NSAppleEventDescriptor) {
+        guard let urlString = event.paramDescriptor(forKeyword: AEKeyword(keyDirectObject))?.stringValue,
+              let url = URL(string: urlString),
+              url.scheme == "openhere" else { return }
 
-            switch url.host {
-            case "shell":
-                if let cmd = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-                    .queryItems?.first(where: { $0.name == "cmd" })?.value,
-                   let data = Data(base64Encoded: cmd),
-                   let command = String(data: data, encoding: .utf8) {
-                    executeShellCommand(command)
-                }
-            default:
-                break
+        launchedViaURL = true
+
+        switch url.host {
+        case "shell":
+            if let cmd = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                .queryItems?.first(where: { $0.name == "cmd" })?.value,
+               let data = Data(base64Encoded: cmd),
+               let command = String(data: data, encoding: .utf8) {
+                executeShellCommand(command)
             }
+        default:
+            break
+        }
+
+        // If we're already past finishLaunching (app was already running, e.g. Settings
+        // window open), applicationDidFinishLaunching won't fire again to terminate us —
+        // do it here once the command has run.
+        if didFinishLaunching {
+            registerExtension()
+            NSApp.terminate(nil)
         }
     }
 
