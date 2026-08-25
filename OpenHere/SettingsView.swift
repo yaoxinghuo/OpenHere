@@ -9,20 +9,27 @@ struct SettingsView: View {
         VStack(spacing: 0) {
             List(selection: $selectedItemID) {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                    MenuItemRow(item: item, onUpdate: { updated in
-                        if let idx = items.firstIndex(where: { $0.id == item.id }) {
-                            items[idx] = updated
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("#\(index + 1)")
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                            .frame(width: 28, alignment: .leading)
+                            .padding(.top, 6)
+                        MenuItemRow(item: item, onUpdate: { updated in
+                            if let idx = items.firstIndex(where: { $0.id == item.id }) {
+                                items[idx] = updated
+                                MenuConfigStore.save(items)
+                            }
+                        }, onDelete: {
+                            items.removeAll { $0.id == item.id }
                             MenuConfigStore.save(items)
-                        }
-                    }, onDelete: {
-                        items.removeAll { $0.id == item.id }
-                        MenuConfigStore.save(items)
-                    })
+                        })
+                    }
                     .tag(item.id)
                     .listRowBackground(
                         index % 2 == 0
                             ? Color.clear
-                            : Color.black.opacity(0.04)
+                            : Color.black.opacity(0.06)
                     )
                 }
             }

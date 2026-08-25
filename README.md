@@ -50,8 +50,8 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
    xattr -cr /Applications/OpenHere.app
    ```
 5. **Launch the app** (double-click it) — the settings window appears, and macOS registers the Finder Sync Extension on first launch.
-6. Open **System Settings → Extensions → Finder Extensions** and enable **OpenHere**.
-7. In Finder, go to **View → Customize Toolbar…** and drag the OpenHere icon into your toolbar.
+6. In Finder, go to **View → Customize Toolbar…** and drag the OpenHere icon into your toolbar.
+   > If the icon doesn't appear in the customize sheet, open **System Settings → Extensions → Finder Extensions** and make sure **OpenHere** is enabled.
 
 ### Option B — Build from source
 
@@ -75,8 +75,8 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
    cp -R build/Build/Products/Release/OpenHere.app /Applications/
    ```
 
-4. Launch the app, then enable the extension in **System Settings → Extensions → Finder Extensions**.
-5. In Finder, go to **View → Customize Toolbar…** and drag the OpenHere icon into your toolbar.
+4. Launch the app, then in Finder go to **View → Customize Toolbar…** and drag the OpenHere icon into your toolbar.
+   > If the icon doesn't appear, open **System Settings → Extensions → Finder Extensions** and make sure **OpenHere** is enabled.
 
 ---
 
@@ -86,7 +86,7 @@ The project has two components:
 
 1. **FinderSyncExtension** — a Finder Sync Extension that provides a native toolbar button with a dropdown menu. Menu items are dynamically generated from your configuration. The extension gets the current Finder directory via `FIFinderSyncController` and executes the corresponding action.
 
-2. **OpenHere (main app)** — the host app that contains the extension and provides a SwiftUI settings window for configuring menu items. Configurations are shared via `UserDefaults` suite.
+2. **OpenHere (main app)** — the host app that contains the extension and provides a SwiftUI settings window for configuring menu items. Configurations are stored in a shared JSON file inside the extension's container directory.
 
 ```
 Click toolbar button
@@ -119,7 +119,7 @@ Launch the app to open the settings window. You can:
 - **Add** menu items with a display name, action type, and command template
 - **Edit** items inline (name, type, template)
 - **Delete** items
-- **Reorder** items via drag-and-drop
+- **Reorder** items via up/down buttons
 
 The default configuration includes one item: **Open in Terminal** (`open -a Terminal {path}`).
 

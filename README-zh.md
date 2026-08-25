@@ -50,8 +50,8 @@
    xattr -cr /Applications/OpenHere.app
    ```
 5. **启动 app**（双击打开）——设置窗口会出现，macOS 会在首次启动时注册 Finder Sync Extension。
-6. 打开 **系统设置 → 扩展 → Finder 扩展**，启用 **OpenHere**。
-7. 在 Finder 中，选择 **查看 → 自定义工具栏…**，将 OpenHere 图标拖到工具栏。
+6. 在 Finder 中，选择 **查看 → 自定义工具栏…**，将 OpenHere 图标拖到工具栏。
+   > 如果自定义工具栏中看不到 OpenHere 图标，打开 **系统设置 → 扩展 → Finder 扩展**，确认 **OpenHere** 已启用。
 
 ### 方式 B — 从源码编译
 
@@ -75,8 +75,8 @@
    cp -R build/Build/Products/Release/OpenHere.app /Applications/
    ```
 
-4. 启动 app，然后在 **系统设置 → 扩展 → Finder 扩展** 中启用 OpenHere。
-5. 在 Finder 中，选择 **查看 → 自定义工具栏…**，将 OpenHere 图标拖到工具栏。
+4. 启动 app，然后在 Finder 中选择 **查看 → 自定义工具栏…**，将 OpenHere 图标拖到工具栏。
+   > 如果看不到 OpenHere 图标，打开 **系统设置 → 扩展 → Finder 扩展**，确认 **OpenHere** 已启用。
 
 ---
 
@@ -86,7 +86,7 @@
 
 1. **FinderSyncExtension** — Finder Sync 扩展，提供原生工具栏按钮和下拉菜单。菜单项根据你的配置动态生成。扩展通过 `FIFinderSyncController` 获取当前 Finder 目录并执行对应动作。
 
-2. **OpenHere（主 app）** — 包含扩展的宿主 app，提供 SwiftUI 设置窗口用于配置菜单项。配置通过 `UserDefaults` suite 共享。
+2. **OpenHere（主 app）** — 包含扩展的宿主 app，提供 SwiftUI 设置窗口用于配置菜单项。配置通过共享 JSON 文件存储在扩展的容器目录中。
 
 ```
 点击工具栏按钮
@@ -119,7 +119,7 @@
 - **添加** 菜单项（显示名称、动作类型、命令模板）
 - **编辑** 菜单项（名称、类型、模板）
 - **删除** 菜单项
-- **拖拽排序** 菜单项
+- **上/下按钮排序** 菜单项
 
 默认配置包含一项：**Open in Terminal**（`open -a Terminal {path}`）。
 
