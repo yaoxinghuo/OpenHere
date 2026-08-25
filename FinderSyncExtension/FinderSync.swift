@@ -50,21 +50,15 @@ class FinderSync: FIFinderSync {
 
         switch config.actionType {
         case .urlScheme:
-            // Open URL schemes directly from the extension
             let resolved = MenuConfigStore.resolveTemplate(config.template, path: path)
             if let url = URL(string: resolved) {
                 NSWorkspace.shared.open(url)
             }
         case .shellCommand:
-            // Shell commands must be delegated to the main app via openhere:// URL scheme,
-            // because the FinderSync extension is sandboxed and cannot use Process.
-            // Path is single-quoted to handle spaces and special characters.
+            // Single-quote the path to handle spaces and special characters
             let quotedPath = "'\(path.replacingOccurrences(of: "'", with: "'\\''"))'"
             let resolved = MenuConfigStore.resolveTemplate(config.template, path: quotedPath)
-            let encoded = Data(resolved.utf8).base64EncodedString()
-            if let url = URL(string: "openhere://shell?cmd=\(encoded)") {
-                NSWorkspace.shared.open(url)
-            }
+            executeShellCommand(resolved)
         }
     }
 
@@ -89,6 +83,15 @@ class FinderSync: FIFinderSync {
         }
 
         return NSHomeDirectory()
+    }
+
+    // MARK: - Shell Command Execution
+
+    private func executeShellCommand(_ command: String) {
+        let task = Process()
+        task.launchPath = "/bin/sh"
+        task.arguments = ["-c", command]
+        try? task.run()
     }
 
     // MARK: - Required Overrides

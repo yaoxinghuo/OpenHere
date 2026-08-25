@@ -25,35 +25,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        false
-    }
-
-    /// Handle openhere:// URL scheme — used by the FinderSyncExtension to delegate
-    /// shell command execution to the main app (which has sandbox disabled).
-    func application(_ application: NSApplication, open urls: [URL]) {
-        for url in urls {
-            guard url.scheme == "openhere" else { continue }
-
-            switch url.host {
-            case "shell":
-                // openhere://shell?cmd=<base64 encoded shell command>
-                if let cmd = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-                    .queryItems?.first(where: { $0.name == "cmd" })?.value,
-                   let data = Data(base64Encoded: cmd),
-                   let command = String(data: data, encoding: .utf8) {
-                    executeShellCommand(command)
-                }
-            default:
-                break
-            }
-        }
-    }
-
-    private func executeShellCommand(_ command: String) {
-        let task = Process()
-        task.launchPath = "/bin/sh"
-        task.arguments = ["-c", command]
-        try? task.run()
+        true
     }
 
     private func showSettingsWindow() {

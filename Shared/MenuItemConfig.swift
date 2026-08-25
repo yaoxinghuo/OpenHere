@@ -19,32 +19,25 @@ struct MenuItemConfig: Codable, Identifiable, Equatable {
     }
 }
 
-/// Manages menu item configurations stored in a shared JSON file
+/// Manages menu item configurations stored in a shared UserDefaults suite
 /// accessible by both the main app and the Finder Sync Extension.
 struct MenuConfigStore {
-    static let sharedDir: URL = {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-            ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support")
-        let dir = appSupport.appendingPathComponent("OpenHere")
-        if !FileManager.default.fileExists(atPath: dir.path) {
-            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        }
-        return dir
-    }()
-
-    static let configFile = sharedDir.appendingPathComponent("menuitems.json")
+    static let suiteName = "com.local.OpenHere.shared"
+    static let key = "menuItems"
     static let pathPlaceholder = "{path}"
 
     static func load() -> [MenuItemConfig] {
-        guard let data = try? Data(contentsOf: configFile) else {
+        let defaults = UserDefaults(suiteName: suiteName)
+        guard let data = defaults?.data(forKey: key) else {
             return defaultItems()
         }
         return (try? JSONDecoder().decode([MenuItemConfig].self, from: data)) ?? defaultItems()
     }
 
     static func save(_ items: [MenuItemConfig]) {
+        let defaults = UserDefaults(suiteName: suiteName)
         if let data = try? JSONEncoder().encode(items) {
-            try? data.write(to: configFile, options: .atomic)
+            defaults?.set(data, forKey: key)
         }
     }
 

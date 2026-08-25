@@ -26,16 +26,5 @@
 	<string>OpenHere needs access to Finder to get the current directory path.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>com.local.OpenHere</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>openhere</string>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>
