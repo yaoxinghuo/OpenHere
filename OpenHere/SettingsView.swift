@@ -21,13 +21,12 @@ struct SettingsView: View {
                     .tag(item.id)
                     .listRowBackground(
                         index % 2 == 0
-                            ? Color(nsColor: .windowBackgroundColor)
-                            : Color(nsColor: .unemphasizedSelectedContentBackgroundColor).opacity(0.3)
+                            ? Color.clear
+                            : Color.black.opacity(0.04)
                     )
                 }
             }
             .listStyle(.inset)
-            .scrollContentBackground(.hidden)
 
             Divider()
 
