@@ -8,6 +8,16 @@
 
 ![macOS 12+](https://img.shields.io/badge/macOS-12%2B-blue) ![Swift 5](https://img.shields.io/badge/Swift-5-orange) ![License MIT](https://img.shields.io/badge/license-MIT-green)
 
+> 轻量级：整个应用不到 2 MB。无后台进程，无菜单栏图标——只有一个 Finder 工具栏按钮。
+
+<!-- 截图 -->
+
+<p align="center">
+  <img src="" alt="设置页面" width="480" />
+  &nbsp;&nbsp;
+  <img src="" alt="Finder 工具栏下拉菜单" width="480" />
+</p>
+
 ---
 
 ## 功能
@@ -23,6 +33,7 @@
   - 没有可用窗口 → 打开桌面
 - **设置界面** — 基于 SwiftUI 的设置窗口，方便管理菜单项
 - **Finder Sync 扩展** — 原生工具栏按钮 + 下拉菜单
+- **轻量级** — 不到 2 MB，无后台进程，无菜单栏图标
 
 ---
 

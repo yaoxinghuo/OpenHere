@@ -8,6 +8,16 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
 
 ![macOS 12+](https://img.shields.io/badge/macOS-12%2B-blue) ![Swift 5](https://img.shields.io/badge/Swift-5-orange) ![License MIT](https://img.shields.io/badge/license-MIT-green)
 
+> Lightweight: the entire app is under 2 MB. No background processes, no menu bar item — just a Finder toolbar button.
+
+<!-- Screenshots -->
+
+<p align="center">
+  <img src="" alt="Settings Window" width="480" />
+  &nbsp;&nbsp;
+  <img src="" alt="Finder Toolbar Dropdown" width="480" />
+</p>
+
 ---
 
 ## Features
@@ -23,6 +33,7 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
   - No usable window → Desktop
 - **Settings UI** — SwiftUI-based settings window to manage your menu items
 - **Finder Sync Extension** — native toolbar button with dropdown menu
+- **Lightweight** — under 2 MB, no background processes, no menu bar item
 
 ---
 
