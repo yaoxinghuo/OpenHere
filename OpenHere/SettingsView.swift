@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @State private var items: [MenuItemConfig] = []
     @State private var showAddSheet = false
+    @State private var editMode: EditMode = .inactive
 
     var body: some View {
         VStack(spacing: 0) {
@@ -11,7 +12,6 @@ struct SettingsView: View {
                     MenuItemRow(item: item, onUpdate: { updated in
                         if let idx = items.firstIndex(where: { $0.id == item.id }) {
                             items[idx] = updated
-                            MenuConfigStore.save(items)
                         }
                     }, onDelete: {
                         items.removeAll { $0.id == item.id }
@@ -24,12 +24,18 @@ struct SettingsView: View {
                 }
             }
             .listStyle(.inset)
+            .environment(\.editMode, $editMode)
 
             Divider()
 
             HStack {
                 Button(action: { showAddSheet = true }) {
                     Label("Add", systemImage: "plus")
+                }
+                Button(action: {
+                    editMode = (editMode == .active) ? .inactive : .active
+                }) {
+                    Label(editMode == .active ? "Done" : "Sort", systemImage: editMode == .active ? "checkmark" : "arrow.up.arrow.down")
                 }
                 Spacer()
                 Text("\(items.count) item\(items.count == 1 ? "" : "s")")
@@ -41,6 +47,9 @@ struct SettingsView: View {
         .frame(minWidth: 520, minHeight: 360)
         .onAppear {
             items = MenuConfigStore.load()
+        }
+        .onDisappear {
+            MenuConfigStore.save(items)
         }
         .sheet(isPresented: $showAddSheet) {
             AddItemSheet { newItem in
