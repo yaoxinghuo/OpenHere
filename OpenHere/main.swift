@@ -117,7 +117,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
         appMenuItem.submenu = appMenu
         appMenu.addItem(withTitle: "About OpenHere", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         appMenu.addItem(NSMenuItem.separator())
-        let quitItem = appMenu.addItem(withTitle: "Quit OpenHere", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Quit OpenHere", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
 
         // Edit menu (enables Cmd+C, Cmd+V, Cmd+A, Cmd+Z in text fields)
         let editMenuItem = NSMenuItem()

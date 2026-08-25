@@ -3,11 +3,11 @@ import SwiftUI
 struct SettingsView: View {
     @State private var items: [MenuItemConfig] = []
     @State private var showAddSheet = false
-    @State private var editMode: EditMode = .inactive
+    @State private var selectedItemID: UUID?
 
     var body: some View {
         VStack(spacing: 0) {
-            List {
+            List(selection: $selectedItemID) {
                 ForEach(items) { item in
                     MenuItemRow(item: item, onUpdate: { updated in
                         if let idx = items.firstIndex(where: { $0.id == item.id }) {
@@ -17,14 +17,10 @@ struct SettingsView: View {
                         items.removeAll { $0.id == item.id }
                         MenuConfigStore.save(items)
                     })
-                }
-                .onMove { from, to in
-                    items.move(fromOffsets: from, toOffset: to)
-                    MenuConfigStore.save(items)
+                    .tag(item.id)
                 }
             }
             .listStyle(.inset)
-            .environment(\.editMode, $editMode)
 
             Divider()
 
@@ -32,11 +28,17 @@ struct SettingsView: View {
                 Button(action: { showAddSheet = true }) {
                     Label("Add", systemImage: "plus")
                 }
-                Button(action: {
-                    editMode = (editMode == .active) ? .inactive : .active
-                }) {
-                    Label(editMode == .active ? "Done" : "Sort", systemImage: editMode == .active ? "checkmark" : "arrow.up.arrow.down")
+                // Move up / down buttons for reordering (macOS has no EditMode)
+                Button(action: { moveSelected(by: -1) }) {
+                    Image(systemName: "arrow.up")
                 }
+                .buttonStyle(.borderless)
+                .disabled(!canMove(by: -1))
+                Button(action: { moveSelected(by: 1) }) {
+                    Image(systemName: "arrow.down")
+                }
+                .buttonStyle(.borderless)
+                .disabled(!canMove(by: 1))
                 Spacer()
                 Text("\(items.count) item\(items.count == 1 ? "" : "s")")
                     .font(.caption)
@@ -58,6 +60,24 @@ struct SettingsView: View {
                 showAddSheet = false
             }
         }
+    }
+
+    // MARK: - Reordering
+
+    private func canMove(by offset: Int) -> Bool {
+        guard let id = selectedItemID,
+              let idx = items.firstIndex(where: { $0.id == id }) else { return false }
+        let target = idx + offset
+        return target >= 0 && target < items.count
+    }
+
+    private func moveSelected(by offset: Int) {
+        guard let id = selectedItemID,
+              let idx = items.firstIndex(where: { $0.id == id }) else { return }
+        let target = idx + offset
+        guard target >= 0, target < items.count else { return }
+        items.swapAt(idx, target)
+        MenuConfigStore.save(items)
     }
 }
 
