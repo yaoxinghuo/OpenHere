@@ -9,18 +9,24 @@ import SwiftUI
 let app = NSApplication.shared
 private let delegate = AppDelegate()
 app.delegate = delegate
-app.setActivationPolicy(.regular)
+app.setActivationPolicy(.accessory)
 app.run()
 
 // MARK: - App Delegate
 
 private final class AppDelegate: NSObject, NSApplicationDelegate {
     private var window: NSWindow?
+    private var launchedViaURL = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        showSettingsWindow()
+        if launchedViaURL {
+            // URL handler already processed the command; just register extension and quit
+            registerExtension()
+            NSApp.terminate(nil)
+            return
+        }
 
-        // Register and enable the FinderSyncExtension on launch
+        showSettingsWindow()
         registerExtension()
     }
 
@@ -28,7 +34,37 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
         true
     }
 
+    /// Handle openhere:// URL scheme — used by the FinderSyncExtension to delegate
+    /// shell command execution. The app launches, executes the command, and quits.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        launchedViaURL = true
+        for url in urls {
+            guard url.scheme == "openhere" else { continue }
+
+            switch url.host {
+            case "shell":
+                if let cmd = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+                    .queryItems?.first(where: { $0.name == "cmd" })?.value,
+                   let data = Data(base64Encoded: cmd),
+                   let command = String(data: data, encoding: .utf8) {
+                    executeShellCommand(command)
+                }
+            default:
+                break
+            }
+        }
+    }
+
+    private func executeShellCommand(_ command: String) {
+        let task = Process()
+        task.launchPath = "/bin/sh"
+        task.arguments = ["-c", command]
+        try? task.run()
+        task.waitUntilExit()
+    }
+
     private func showSettingsWindow() {
+        NSApp.setActivationPolicy(.regular)
         let settingsView = SettingsView()
         let hostingController = NSHostingController(rootView: settingsView)
 
