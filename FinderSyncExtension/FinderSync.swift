@@ -44,16 +44,26 @@ class FinderSync: FIFinderSync {
     // MARK: - Actions
 
     @IBAction func menuItemAction(_ sender: NSMenuItem) {
-        guard let config = sender.representedObject as? MenuItemConfig else { return }
+        guard let config = sender.representedObject as? MenuItemConfig else {
+            NSLog("[OpenHere] menuItemAction: representedObject cast failed")
+            return
+        }
 
         let path = currentPath()
+        NSLog("[OpenHere] menuItemAction: name=%@ type=%@ path=%@", config.name, config.actionType.rawValue, path)
 
         switch config.actionType {
         case .urlScheme:
-            // URL schemes can be opened directly from the sandboxed extension
-            let resolved = MenuConfigStore.resolveTemplate(config.template, path: path)
+            // Percent-encode the path for safe URL substitution (handles spaces,
+            // non-ASCII characters like CJK, etc. — matching what URLComponents
+            // would do automatically, which the original hardcoded version used).
+            let encodedPath = path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? path
+            let resolved = MenuConfigStore.resolveTemplate(config.template, path: encodedPath)
+            NSLog("[OpenHere] urlScheme resolved: %@", resolved)
             if let url = URL(string: resolved) {
                 NSWorkspace.shared.open(url)
+            } else {
+                NSLog("[OpenHere] URL(string:) returned nil for: %@", resolved)
             }
         case .shellCommand:
             // Shell commands cannot run in a sandboxed extension.
@@ -62,6 +72,7 @@ class FinderSync: FIFinderSync {
             let quotedPath = "'\(path.replacingOccurrences(of: "'", with: "'\\''"))'"
             let resolved = MenuConfigStore.resolveTemplate(config.template, path: quotedPath)
             let encoded = Data(resolved.utf8).base64EncodedString()
+            NSLog("[OpenHere] shellCommand resolved: %@", resolved)
             if let url = URL(string: "openhere://shell?cmd=\(encoded)") {
                 NSWorkspace.shared.open(url)
             }
