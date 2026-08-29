@@ -62,7 +62,8 @@ class FinderSync: FIFinderSync {
         let config = cachedMenuItems[index]
 
         let path = currentPath()
-        NSLog("[OpenHere] menuItemAction: name=%@ type=%@ path=%@", config.name, config.actionType.rawValue, path)
+        let filePath = currentFilePath()
+        NSLog("[OpenHere] menuItemAction: name=%@ type=%@ path=%@ filePath=%@", config.name, config.actionType.rawValue, path, filePath)
 
         switch config.actionType {
         case .urlScheme:
@@ -70,7 +71,8 @@ class FinderSync: FIFinderSync {
             // non-ASCII characters like CJK, etc. — matching what URLComponents
             // would do automatically, which the original hardcoded version used).
             let encodedPath = path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? path
-            let resolved = MenuConfigStore.resolveTemplate(config.template, path: encodedPath)
+            let encodedFilePath = filePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? filePath
+            let resolved = MenuConfigStore.resolveTemplate(config.template, path: encodedPath, filePath: encodedFilePath)
             NSLog("[OpenHere] urlScheme resolved: %@", resolved)
             if let url = URL(string: resolved) {
                 NSWorkspace.shared.open(url)
@@ -82,7 +84,8 @@ class FinderSync: FIFinderSync {
             // Delegate to the main app via openhere:// URL scheme.
             // The main app will execute the command and quit immediately.
             let quotedPath = "'\(path.replacingOccurrences(of: "'", with: "'\\''"))'"
-            let resolved = MenuConfigStore.resolveTemplate(config.template, path: quotedPath)
+            let quotedFilePath = "'\(filePath.replacingOccurrences(of: "'", with: "'\\''"))'"
+            let resolved = MenuConfigStore.resolveTemplate(config.template, path: quotedPath, filePath: quotedFilePath)
             let encoded = Data(resolved.utf8).base64EncodedString()
             NSLog("[OpenHere] shellCommand resolved: %@", resolved)
             if let url = URL(string: "openhere://shell?cmd=\(encoded)") {
@@ -93,8 +96,8 @@ class FinderSync: FIFinderSync {
 
     // MARK: - Path Resolution
 
-    /// Resolve the template by replacing {path} with the given directory path.
-    /// The path is single-quoted to handle spaces and special characters.
+    /// Returns the directory path for {path} placeholder.
+    /// If a file is selected, returns its parent directory; if a directory is selected, returns it directly.
     private func currentPath() -> String {
         let controller = FIFinderSyncController.default()
 
@@ -105,6 +108,22 @@ class FinderSync: FIFinderSync {
             } else {
                 return selected.deletingLastPathComponent().path
             }
+        }
+
+        if let target = controller.targetedURL() {
+            return target.path
+        }
+
+        return NSHomeDirectory()
+    }
+
+    /// Returns the full path of the selected item for {filePath} placeholder.
+    /// If a file is selected, returns the file path; if a directory is selected, returns the directory path.
+    private func currentFilePath() -> String {
+        let controller = FIFinderSyncController.default()
+
+        if let selected = controller.selectedItemURLs()?.first {
+            return selected.path
         }
 
         if let target = controller.targetedURL() {

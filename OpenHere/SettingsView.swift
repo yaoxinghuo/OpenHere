@@ -148,7 +148,7 @@ struct MenuItemRow: View {
                 )
                 .textFieldStyle(.roundedBorder)
                 .font(.system(.body, design: .monospaced))
-                Text("Use {path} as placeholder for current Finder directory.")
+                Text("Use {path} for current Finder directory, {filePath} for selected file path.")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
@@ -196,7 +196,7 @@ struct AddItemSheet: View {
                 .textFieldStyle(.roundedBorder)
                 .font(.system(.body, design: .monospaced))
 
-                Text("Use {path} as placeholder for current Finder directory.")
+                Text("Use {path} for current Finder directory, {filePath} for selected file path.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

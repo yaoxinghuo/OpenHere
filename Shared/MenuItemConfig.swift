@@ -62,6 +62,7 @@ struct MenuConfigStore {
 
     static let configFile = sharedDir.appendingPathComponent("menuitems.json")
     static let pathPlaceholder = "{path}"
+    static let filePathPlaceholder = "{filePath}"
 
     static func load() -> [MenuItemConfig] {
         guard let data = try? Data(contentsOf: configFile) else {
@@ -86,8 +87,12 @@ struct MenuConfigStore {
         ]
     }
 
-    /// Resolve the template by replacing {path} with the given directory path.
-    static func resolveTemplate(_ template: String, path: String) -> String {
-        template.replacingOccurrences(of: pathPlaceholder, with: path)
+    /// Resolve the template by replacing {filePath} and {path} placeholders.
+    /// {filePath} is replaced first so that {path} only matches the directory placeholder,
+    /// not a substring of {filePath}.
+    static func resolveTemplate(_ template: String, path: String, filePath: String) -> String {
+        template
+            .replacingOccurrences(of: filePathPlaceholder, with: filePath)
+            .replacingOccurrences(of: pathPlaceholder, with: path)
     }
 }
