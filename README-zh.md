@@ -13,7 +13,7 @@
 <!-- 截图 -->
 
 <p align="center">
-  <img width="1736" height="608" alt="image" src="https://github.com/user-attachments/assets/fa66d004-6d57-421f-90cd-bd842453047e" />
+  <img width="1746" height="662" alt="image" src="https://github.com/user-attachments/assets/59befc24-1d08-4425-b173-ca77b91abe14" />
   &nbsp;&nbsp;
   <img width="1040" height="776" alt="image" src="https://github.com/user-attachments/assets/4201359b-efb1-4fe2-a081-a088a15f76fd" />
 
