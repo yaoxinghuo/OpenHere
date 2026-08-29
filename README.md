@@ -13,7 +13,7 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
 <!-- Screenshots -->
 
 <p align="center">
-  <img width="1736" height="608" alt="image" src="https://github.com/user-attachments/assets/fa66d004-6d57-421f-90cd-bd842453047e" />
+  <img width="1752" height="888" alt="image" src="https://github.com/user-attachments/assets/9d6c4660-4697-4442-8be1-42e6d2fb174f" />
   &nbsp;&nbsp;
   <img width="1040" height="776" alt="image" src="https://github.com/user-attachments/assets/4201359b-efb1-4fe2-a081-a088a15f76fd" />
 
