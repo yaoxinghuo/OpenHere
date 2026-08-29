@@ -48,6 +48,14 @@ class FinderSync: FIFinderSync {
             menuItem.tag = index
             menu.addItem(menuItem)
         }
+        // Add a separator and Settings item at the bottom
+        menu.addItem(NSMenuItem.separator())
+        let settingsItem = NSMenuItem(
+            title: "Settings…",
+            action: #selector(openSettings(_:)),
+            keyEquivalent: ""
+        )
+        menu.addItem(settingsItem)
         return menu
     }
 
@@ -92,6 +100,20 @@ class FinderSync: FIFinderSync {
                 NSWorkspace.shared.open(url)
             }
         }
+    }
+
+    /// Open the host app's Settings window.
+    /// The extension lives inside the host app bundle at
+    ///   OpenHere.app/Contents/PlugIns/FinderSyncExtension.appex
+    /// so we navigate up two levels to find the host app URL —
+    /// no hardcoded path needed.
+    @IBAction func openSettings(_ sender: NSMenuItem) {
+        let hostAppURL = Bundle.main.bundleURL
+            .deletingLastPathComponent()  // → PlugIns/
+            .deletingLastPathComponent()  // → Contents/
+            .deletingLastPathComponent()  // → OpenHere.app/
+        NSLog("[OpenHere] openSettings: hostAppURL=%@", hostAppURL.path)
+        NSWorkspace.shared.openApplication(at: hostAppURL, configuration: NSWorkspace.OpenConfiguration())
     }
 
     // MARK: - Path Resolution

@@ -27,7 +27,8 @@
 - **两种动作类型**
   - **URL Scheme** — 打开 URL（如 `nyaterm://connect/local?cwd={path}`）
   - **Shell Command** — 执行 shell 命令（如 `open -a Terminal {path}`）
-- **`{path}` 占位符** — 自动替换为当前 Finder 目录路径
+- **`{path}` 占位符** — 替换为当前 Finder 目录路径（选中文件时用父目录）
+- **`{filePath}` 占位符** — 替换为选中项的完整路径（文件→文件路径，文件夹→文件夹路径）
 - **智能路径检测**
   - 有选中项 → 用选中项（文件则用**父目录**）
   - 无选中 → 用当前 Finder 窗口的文件夹
@@ -109,13 +110,14 @@
        ▼
   FinderSyncExtension 获取当前路径
   ┌─────────────────────────────────────────────────────────┐
-  │ 有选中项？ → 用选中项（文件 → 父目录）                  │
+  │ 有选中项？ → 用选中项（文件 → 父目录 for {path}）        │
+  │                 （文件 → 文件路径 for {filePath}）       │
   │ 否则 targetedURL → 当前 Finder 窗口文件夹               │
   │ 否则 ~/Desktop                                          │
   └─────────────────────────────────────────────────────────┘
        │
        ▼
-  替换模板中的 {path} → 执行动作
+  替换模板中的 {path} / {filePath} → 执行动作
   ┌─────────────────────────────────────────────────────────┐
   │ URL Scheme → NSWorkspace.shared.open(url)               │
   │ Shell Command → /bin/sh -c "command"                    │
@@ -133,7 +135,7 @@
 - **删除** 菜单项
 - **上/下按钮排序** 菜单项
 
-默认配置包含一项：**Open in Terminal**（`open -a Terminal {path}`）。
+默认配置包含两项：**Open in Terminal**（`open -a Terminal {path}`）和 **Copy File Path**（`printf '%s' {filePath} | pbcopy`）。
 
 ### 示例
 
@@ -143,6 +145,7 @@
 | Open in iTerm | Shell Command | `open -a iTerm {path}` |
 | Open in VS Code | Shell Command | `code {path}` |
 | Open in NyaTerm | URL Scheme | `nyaterm://connect/local?cwd={path}` |
+| Copy File Path | Shell Command | `printf '%s' {filePath} \| pbcopy` |
 
 ---
 

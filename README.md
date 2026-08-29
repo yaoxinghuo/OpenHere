@@ -27,7 +27,8 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
 - **Two action types**
   - **URL Scheme** — open a URL (e.g. `nyaterm://connect/local?cwd={path}`)
   - **Shell Command** — execute a shell command (e.g. `open -a Terminal {path}`)
-- **`{path}` placeholder** — automatically replaced with the current Finder directory
+- **`{path}` placeholder** — replaced with the current Finder directory (file selection → parent folder)
+- **`{filePath}` placeholder** — replaced with the selected item's full path (file → file path, folder → folder path)
 - **Smart path detection**
   - Selection → use selected item (if it's a **file**, use the **parent folder**)
   - No selection → current Finder window folder
@@ -109,13 +110,14 @@ Click toolbar button
        ▼
   FinderSyncExtension gets current path
   ┌─────────────────────────────────────────────────────────┐
-  │ selected item? → use it (file → parent dir)             │
+  │ selected item? → use it (file → parent dir for {path})  │
+  │                   (file → file path for {filePath})     │
   │ else targetedURL → current Finder window folder         │
   │ else ~/Desktop                                          │
   └─────────────────────────────────────────────────────────┘
        │
        ▼
-  Replace {path} in template → execute action
+  Replace {path} / {filePath} in template → execute action
   ┌─────────────────────────────────────────────────────────┐
   │ URL Scheme → NSWorkspace.shared.open(url)               │
   │ Shell Command → /bin/sh -c "command"                    │
@@ -133,7 +135,7 @@ Launch the app to open the settings window. You can:
 - **Delete** items
 - **Reorder** items via up/down buttons
 
-The default configuration includes one item: **Open in Terminal** (`open -a Terminal {path}`).
+The default configuration includes two items: **Open in Terminal** (`open -a Terminal {path}`) and **Copy File Path** (`printf '%s' {filePath} | pbcopy`).
 
 ### Examples
 
@@ -143,6 +145,7 @@ The default configuration includes one item: **Open in Terminal** (`open -a Term
 | Open in iTerm | Shell Command | `open -a iTerm {path}` |
 | Open in VS Code | Shell Command | `code {path}` |
 | Open in NyaTerm | URL Scheme | `nyaterm://connect/local?cwd={path}` |
+| Copy File Path | Shell Command | `printf '%s' {filePath} \| pbcopy` |
 
 ---
 
