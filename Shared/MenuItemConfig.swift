@@ -83,6 +83,11 @@ struct MenuConfigStore {
                 name: "Open in Terminal",
                 actionType: .shellCommand,
                 template: "open -a Terminal {path}"
+            ),
+            MenuItemConfig(
+                name: "Copy File Path",
+                actionType: .shellCommand,
+                template: "printf '%s' {filePath} | pbcopy"
             )
         ]
     }
