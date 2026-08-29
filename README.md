@@ -44,7 +44,7 @@ A minimal macOS Finder toolbar app that lets you open the current directory in a
 | Requirement | Version |
 |---|---|
 | macOS | 12.0 Monterey or later |
-| Xcode | 15+ (free from the App Store) |
+| Xcode | 15+ *(only needed if building from source)* |
 
 ---
 
